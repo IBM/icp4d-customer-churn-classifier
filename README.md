@@ -14,7 +14,7 @@ When the reader has completed this code pattern, they will understand how to:
 * Use Watson Machine Learning to expose the model as a RESTful API endpoint
 * Access the model from a remote app for inference (churn risk prediction)
 
-![architecture](doc/source/images/cc_intro.jpg)
+![architecture](doc/source/images/architecture.png)
 
 ## Flow
 
