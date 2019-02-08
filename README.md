@@ -47,11 +47,11 @@ Sign in to your IBM Cloud Private for Data web client. All of the steps are perf
 
 1. [Clone the repo](#1-clone-the-repo)
 2. [Load the data into Db2 Warehouse](#2-load-the-data-into-db2-warehouse)
-2. [Set up an analytics project](#2-set-up-an-analytics-project)
-3. [Create the notebook](#3-create-the-notebook)
-4. [Insert Spark DataFrame](#4-insert-spark-dataframe)
-5. [Run the notebook](#5-run-the-notebook)
-6. [Analyze the results](#6-analyze-the-results)
+3. [Set up an analytics project](#3-set-up-an-analytics-project)
+4. [Create the notebook](#4-create-the-notebook)
+5. [Insert Spark DataFrame](#5-insert-spark-dataframe)
+6. [Run the notebook](#6-run-the-notebook)
+7. [Analyze the results](#7-analyze-the-results)
 
 ### 1. Clone the repo
 
@@ -90,7 +90,7 @@ If you created a Db2 Warehouse database deployment in your IBM Cloud Private for
 - [ ] Click on the tile action menu (vertical 3 dots) and select `Details`.
 - [ ] Copy the `Username`, `Password`, and `JDBC Connection URL` to use later.
 
-### 2. Set up an analytics project
+### 3. Set up an analytics project
 
 To get started, open the `Projects` page and set up an analytics project to hold the assets that you want to work with, and then get data for your project.
 
@@ -119,7 +119,7 @@ To get started, open the `Projects` page and set up an analytics project to hold
 - [ ] Provide the table name (that you used when you loaded the CSV data).
 - [ ] Click `Create`.
 
-### 3. Create the notebook
+### 4. Create the notebook
 
 To create and open the notebook from a file:
 
@@ -130,7 +130,7 @@ To create and open the notebook from a file:
 - [ ] Use drag-and-drop or click `browse` and open the `notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb` file from your cloned repo.
 - [ ] Click `Create`.
 
-### 4. Insert Spark DataFrame
+### 5. Insert Spark DataFrame
 
 Now that you are in the notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
 
@@ -157,13 +157,13 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
   df_churn = df#
   ```
 
-### 5. Run the notebook
+### 6. Run the notebook
 
 Run the entire notebook using the menu `Cell ▷ Run All` or run the cells individually with the play button as shown here.
 
 ![press_play.png](doc/source/images/press_play.png)
 
-### 6. Analyze the results
+### 7. Analyze the results
 
 #### When the notebook was created
 
