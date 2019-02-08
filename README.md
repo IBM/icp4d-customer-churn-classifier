@@ -30,13 +30,24 @@ When the reader has completed this code pattern, they will understand how to:
 This code pattern assumes you have are using IBM Cloud Platform for Data.
 
 The following add-ons are required:
+
 * Db2 Warehouse
 * Watson Machine Learning
 
+<!--
+Prereqs (for using the Db2 Warehouse add-on):
+* Install Db2 Warehouse as an add-on feature
+* A database instance needs to be created
+* The user needs to be given access to the database
+ -->
+
 ## Steps
 
+Sign in to your IBM Cloud Private for Data web client. All of the steps are performed using the web client unless stated otherwise.
+
 1. [Clone the repo](#1-clone-the-repo)
-2. [Set up an analytics project and get data](#2-set-up-an-analytics-project-and-get-data)
+2. [Load the data into Db2 Warehouse](#2-load-the-data-into-db2-warehouse)
+2. [Set up an analytics project](#2-set-up-an-analytics-project)
 3. [Create the notebook](#3-create-the-notebook)
 4. [Insert Spark DataFrame](#4-insert-spark-dataframe)
 5. [Run the notebook](#5-run-the-notebook)
@@ -44,84 +55,111 @@ The following add-ons are required:
 
 ### 1. Clone the repo
 
-Clone the `icp4d-customer-churn-classifier` repo locally. In a terminal, run:
+Clone the `icp4d-customer-churn-classifier` repo locally. In a terminal, run the following command:
 
 ```bash
 git clone https://github.com/IBM/icp4d-customer-churn-classifier
 ```
 
-### 2. Set up an analytics project and get data
+### 2. Load the data into Db2 Warehouse
+
+If you created a Db2 Warehouse database deployment in your IBM Cloud Private for Data cluster, you can access the integrated database console to complete common tasks, such as loading data into the database. This is a prerequisite to follow the instructions here and in the notebook, but you could easily adapt this code pattern to accept the data from another source.
+
+#### Open the database
+
+- [ ] Use the left menu's `Collect` drop-down list and click on `My data`.
+- [ ] Click on the `Databases` tab.
+- [ ] You should see a Db2 Warehouse tile with a status of `Available` (otherwise revisit the prerequisites and ensure your userid has access to a database).
+- [ ] Click on the tile action menu (vertical 3 dots) and select `Open`.
+
+#### Load the data
+
+- [ ] Click on the upper-right `☰ Menu` and select `Load`.
+- [ ] Use drag-and-drop or click `browse files` and open the `data/03-mergedcustomers.csv` file from your cloned repo.
+- [ ] Click `Next`.
+- [ ] Select or create the schema to use for the data.
+- [ ] Select or create the table to use for the data.
+- [ ] Click `Next`.
+- [ ] Ensure that the data is being properly interpreted. For example, specify that the first row in the CSV file is a header and ensure that the comma separator is used.
+- [ ] Click `Next`.
+- [ ] Review the summary and click `Begin Load`.
+
+#### Collect the database URL and credentials
+
+- [ ] Go back to `Collect ▷ My data ▷ Databases ▷ Db2 Warehouse` tile.
+- [ ] Click on the tile action menu (vertical 3 dots) and select `Details`.
+- [ ] Copy the `Username`, `Password`, and `JDBC Connection URL` to use later.
+
+### 2. Set up an analytics project
 
 To get started, open the `Projects` page and set up an analytics project to hold the assets that you want to work with, and then get data for your project.
 
 #### Create a project
 
-To create a project:
+- [ ] Go to the `Projects` list and click `+ New project`.
+- [ ] Make sure `Analytics project` is select.
+- [ ] Provide a `Project name`.
+- [ ] Click `OK`.
+- [ ] Stay on the `New` tab.
+- [ ] Optionally, add a `Description`
+- [ ] Click `Create`.
 
-* Go to the `Projects` list and click `+ New project`.
-* Make sure `Analytics project` is select.
-* Provide a `Project name`.
-* Click `OK`.
-* Stay on the `New` tab.
-* Optionally, add a `Description`
-* Click `Create`.
+#### Add the data asset
 
-#### Add data to your analytics project
-
-You can load data into your projects to access with your notebooks and models.
-
-Access data from local files
-
-You can upload and load local data assets such as CSV files into your project. When you add a local data asset to a project, any collaborator in that project can load data from it; for example, they can load the data into a DataFrame in a notebook.
-
-Upload a local data asset
-
-> Tip: The application assumes that any CSV files that you load have headers and use a comma as a field separator. When you load a CSV file, the application attempts to infer the type of the columns in the file. However, the application might not be able to correctly identify all column types. For example, a column with timestamps might be treated as strings.
-
-To upload the local data asset:
-
-* In your project, using the `Assets` tab, click `Data sets`.
-* Click on `+ Add Data Set`.
-* Using the `Local File` tab, use drag-and-drop or click `Select from your local file system` and browse the file system and select the `data/03-mergedcustomers.csv` file from your cloned repo. The file is now added to the project.  
-   ![ds_local_add_data.png](doc/source/images/dsx_local_add_data.png)
+- [ ] Use the left menu to go back to `Projects`.
+- [ ] Select the project you created.
+- [ ] In your project, use the `Data Sources` tab, and click `+ Add Data Source`.
+- [ ] Provide a `Data source name` and `Description`.
+- [ ] Use the `Data source type` drop-down list to select `Db2 Warehouse on Cloud`.
+- [ ] Fill in the `JDBC URL`, `Username`, and `Password` that you collected earlier.
+- [ ] Click the `Test Connection` button and make sure your test connection passed.
+- [ ] Click on `+ Add remote data set`.
+- [ ] Provide a `Remote data set name` and a `Description`.
+- [ ] Provide a `Schema`. This is the schema that you used when you created the table.
+- [ ] Provide the table name (that you used when you loaded the CSV data).
+- [ ] Click `Create`.
 
 ### 3. Create the notebook
 
-To get the notebook file to add to the project:
+To create and open the notebook from a file:
 
-* In your project, using the `Assets` tab, click `Notebooks`.
-* Click on `+ Add Notebook`.
-* Using the `From File` tab:
-   * Provide a notebook `Name`.
-   * Optionally, provide a `Description`.
-   * Use drag-and-drop or click `browse` and select the `notebooks/TradingCustomerChurnClassifierSparkML.ipynb` file from your cloned repo.
-   * Click `Create`.
+- [ ] In your project, using the `Assets` tab, click `Notebooks`.
+- [ ] Click on `+ Add Notebook`.
+- [ ] Select the `From File` tab:
+- [ ] Provide a notebook `Name` and `Description`.
+- [ ] Use drag-and-drop or click `browse` and open the `notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb` file from your cloned repo.
+- [ ] Click `Create`.
 
 ### 4. Insert Spark DataFrame
 
-* Click the *find data* `10/01` icon on the menu bar (last icon).
+Now that you are in the notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
 
-  ![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
-
-* Place your cursor at the last line of the following cell:
+- [ ] Place your cursor at the last line of the following cell:
 
   ```python
-  # Use the find data 01/01 icon and under your Local CSV file
-  # use "Insert to code" to "Insert Spark DataFrame in Python"
+  # Use the find data 10/01 icon and under your remote data set
+  # use "Insert to code" and "Insert Spark DataFrame in Python"
   # here.
 
   ```
 
-* With the `Local` tab under `10/01`, find the `03-mergedcustomers.csv` file that you added to the project, click `Insert to code` and `Insert Spark DataFrame in Python`
-* The inserted code will assign a variable like `df_data_1` (perhaps with a different sequence number). Edit the `#` in the following cell to match the above variable name.
+- [ ] Click the *find data* `10/01` icon on the menu bar (last icon).
+- [ ] Using the `Remote` tab under `10/01`, find the data set that you added to the project, click `Insert to code` and `Insert Spark DataFrame in Python`.
+
+  ![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
+
+- [ ] The inserted code will result in a DataFrame assigned to a variable named `df1` or `df_data_1` (perhaps with a different sequence number). Find the code cell like the following code block and edit the `#` to make it match the variable name.
 
   ```python
-  df_churn_pd = df_data_#
+  # After inserting the Spark DataFrame code above, change the following
+  # df# to match the variable used in the above code. df_churn is used
+  # later in the notebook.
+  df_churn = df#
   ```
 
 ### 5. Run the notebook
 
-Run the entire notebook using the menu `Cell ▷ Run All` or run the cells individually with the play button as shown below.
+Run the entire notebook using the menu `Cell ▷ Run All` or run the cells individually with the play button as shown here.
 
 ![press_play.png](doc/source/images/press_play.png)
 
@@ -167,7 +205,7 @@ Run the entire notebook using the menu `Cell ▷ Run All` or run the cells indiv
 
 ## Sample output
 
-See the notebook with example output and **interactive charts** [here](https://nbviewer.jupyter.org/github/IBM/icp4d-customer-churn-classifier/blob/master/examples/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb).
+See the notebook with example output [here](https://nbviewer.jupyter.org/github/IBM/icp4d-customer-churn-classifier/blob/master/examples/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb).
 
 ## License
 
