@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<br>
+<br>
+
+<table>
+  <tr>
+    <th>Your Input</th>
+    <th>Response</th>
+  </tr>
+  <tr>
+    <td>Age</td>
+    <td>{{request.form['Age']}}</td>
+  </tr>
+  <tr>
+    <td>Gender</td>
+    <td>{{request.form['Gender']}}</td>
+  </tr>
+  <tr>
+    <td>Status</td>
+    <td>{{request.form['Status']}}</td>
+  </tr>
+  <tr>
+    <td>Children</td>
+    <td>{{request.form['Children']}}</td>
+  </tr>
+  <tr>
+    <td>Home Owner</td>
+    <td>{{request.form['Homeowner']}}</td>
+  </tr>
+  <tr>
+    <td>Estimated Income</td>
+    <td>{{request.form['Income']}}</td>
+  </tr>
+  <tr>
+    <td>Net Realized Gains YTD</td>
+    <td>{{request.form['Netrealizedgainsytd']}}</td>
+  </tr>
+  <tr>
+    <td>Net Realized Losses YTD</td>
+    <td>{{request.form['Netrealizedlossesytd']}}</td>
+  </tr>
+  <tr>
+    <td>Smallest Single Transaction</td>
+    <td>{{request.form['Smallestsingletransaction']}}</td>
+  </tr>
+  <tr>
+    <td>Largest Single Transaction</td>
+    <td>{{request.form['Largestsingletransaction']}}</td>
+  </tr>
+  <tr>
+    <td>Total Dollar Value Traded</td>
+    <td>{{request.form['Totaldollarvaluetraded']}}</td>
+  </tr>
+  <tr>
+    <td>Total Units Traded</td>
+    <td>{{request.form['Totalunitstraded']}}</td>
+  </tr>
+  <tr>
+    <td>Days Since Last Login</td>
+    <td>{{request.form['Dayssincelastlogin']}}</td>
+  </tr>
+  <tr>
+    <td>Days Since Last Trade</td>
+    <td>{{request.form['Dayssincelasttrade']}}</td>
+  </tr>
+  <tr>
+    <td>Percentage Change Calculation</td>
+    <td>{{request.form['Percentagechangecalculation']}}</td>
+  </tr>
+</table>
+
+<br>
+<br>
+    <h2>Probability of stock trader churn </h2>
+
+{{request.form['prediction']}}
+{{request.form['probability']}}
+{{ response_scoring.json()["result"] }}
+
+<br>
+<p><strong>Click the Stock Trader Churn link in the navigation bar above to make another prediction.</strong></p>
+
+
+{% endblock %}
