@@ -1,0 +1,32 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<title>Stock Trader Churn</title>
+	<script type="text/javascript" src="static/range.js"></script>
+	<script type="text/javascript" src="static/save.js"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+
+<div class="page">
+  <h1>Stock Trader Churn</h1>
+  <div class="metanav">
+  	<a class="" href="/">Stock Trader Churn</a>
+  </div>
+
+<center><image src="{{ url_for('static', filename='Watson.png') }}" /></center>
+
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block body %}{% endblock %}
+    </div>
+
+<footer>
+October 12, 2018
+</footer>
