@@ -190,7 +190,7 @@ Run the entire notebook using the menu `Cell ▷ Run All` or run the cells indiv
 
   ![churn_risk_chart.png](doc/source/images/churn_risk_chart.png)
 
-* The model was saved and deployed with Watson Machine Learning. The result output include a `scoring_endpoint`. Note that the endpoint host name (`dsxl-api`) needs to be replaced with the external IP address for remote access. We'll look further into using the model in the next sections.
+* The model was saved and deployed with Watson Machine Learning. The resulting output includes a `scoring_endpoint`. Note that the endpoint host name (`dsxl-api`) needs to be replaced with the external IP address for remote access. We'll look further into using the model in the next sections.
 
   ![save_model.png](doc/source/images/save_model.png)
 
