@@ -52,6 +52,8 @@ Sign in to your IBM Cloud Private for Data web client. All of the steps are perf
 5. [Insert Spark DataFrame](#5-insert-spark-dataframe)
 6. [Run the notebook](#6-run-the-notebook)
 7. [Analyze the results](#7-analyze-the-results)
+8. [Test the model in the UI](#8-test-the-model-in-the-ui)
+9. [Use the model in an app](#9-use-the-model-in-an-app)
 
 ### 1. Clone the repo
 
@@ -182,28 +184,67 @@ Run the entire notebook using the menu `Cell ▷ Run All` or run the cells indiv
 
 * The mix of documentation, code, and output can make a Jupyter output self-explanatory. This also makes it a great environment to "show your work" if you have a hypothesis, do some analysis, and come up with a conclusion.
 
-<!--  TODO: describe and show key output
+<!--  TODO: describe and show key output/analysis
  -->
 * Example Brunel chart:
 
   ![churn_risk_chart.png](doc/source/images/churn_risk_chart.png)
 
-#### Check running environments
+* The model was saved and deployed with Watson Machine Learning. The resulting output includes a `scoring_endpoint`. Note that the endpoint host name (`dsxl-api`) needs to be replaced with the external IP address for remote access. We'll look further into using the model in the next sections.
 
-* Hover the mouse on the left menu bar and click `Analyze ▷ Active analytics environments`.
+  ![save_model.png](doc/source/images/save_model.png)
 
-  ![active_envs.png](doc/source/images/active_envs.png)
+### 8. Test the model in the UI
 
-* Notice the Jupyter runtime environment and check the status. It should be green.
+IBM Cloud Private for Data provides various options for analytics models such as testing, scoring, evaluating, and publishing.
 
-  ![runtimes.png](doc/source/images/runtimes.png)
+#### Interactive testing
 
-<!--
-### 1. Try it with curl
-### 1. Try it with python
--->
+You can use real-time scoring to test your model with different input values in a easy-to-use user interface.
 
-## Sample output
+- [ ] In your project, using the `Assets` tab, click `Models`.
+- [ ] Click on the action menu (vertical 3 dots) and select `Real-time score`.
+  ![model_actions.png](doc/source/images/model_actions.png)
+- [ ] Change some test values and click `Submit`. Use the upper-right icons to select a pie chart or bar chart.
+  ![wml_test.png](doc/source/images/wml_test.png)
+
+### 9. Use the model in an app
+
+You can also access the Watson Machine Learning services directly through REST APIs. This allows you to use your model for inference in any of your apps.
+
+#### curl
+
+Using curl on the command line is a good way to test the REST APIs before integrating them with more complicated code.
+
+You need to generate a bearer token before you access any of the Watson Machine Learning APIs. Use the following curl command to generate the bearer token for accessing Watson Machine Learning services. Replace `<ipaddr>`, `<username>`, and `<password>` with your IBM Cloud Private for Data cluster IP address, username and password.
+
+```bash
+curl -k -X GET https://<ipaddr>:31843/v1/preauth/validateAuth -u <username>:<password>
+```
+
+To access the model for online predictions use the following curl command where:
+* <ipaddr> is the IP address of the IBM Cloud Private for Data cluster.
+* <token> is the bearer token that was returned by the above command.
+* <input_payload> is the input json payload used for prediction.
+
+```bash
+curl -X POST -H “Authorization: Bearer <token>” 
+https://<cluster_ip>:31006/v3/wml_instances/{instance_id}/published_models/{published_
+model_id}/deployments/online -H “<input_payload>”
+```
+
+For example:
+
+```bash
+curl -k -X POST \
+  https://:31843/dmodel/v1/churn1/pyscript/churn/score \
+  -H 'Authorization: Bearer yeJhbGaaaiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyAAA2VybmFtZSI6InN0dXJkZXZhbnQiLCJwYWNrYWdlTmFtZSI6InJlbGVhc2UxIIIicGFja2FnZVJvdXRlIjoiY2h1cm4xIiwiaWF0IjoxNTQ5Njg0NTg0fQ.BBBBXw48b0MN-TslNNN8e8ZASEW1xWPSen8-1o696i54U4v75wJjiQmGMs-xMe44444yq62qE8zNvXEsHM8TnnAEfaFPvokEgWtKpduWSQo1SAKch-bQhfhMJUK2wetYsUpOw5Gffuamd_jkqqQlqi4asbL_DSGBbHhNx-nnnnnsnMKm7giBa8IgtFrf6JITVIwS2xbob2t1xE_ztG0p43KK1UrddPBpztqifQybH_zbdEPOoF6Xf-ZRBcDkRMHbhC-FFF7saWLkX3AYmCboLzatB0_ufLOy2S2TosSie_UPKOS0aLcXjJDMbgsGqy9C_AsK5n28HysmH2NeXzEN9A' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -d '{"args":{"input_json":[{"ID":4,"Gender":"F","Status":"M","Children":2,"EstIncome":52004,"HomeOwner":"N","Age":25,"TotalDollarValueTraded":5030,"TotalUnitsTraded":23,"LargestSingleTransaction":1257,"SmallestSingleTransaction":125,"PercentChangeCalculation":3,"DaysSinceLastLogin":2,"DaysSinceLastTrade":19,"NetRealizedGains_YTD":0,"NetRealizedLosses_YTD":251}]}}'
+```
+
+## Sample notebook output
 
 See the notebook with example output [here](https://nbviewer.jupyter.org/github/IBM/icp4d-customer-churn-classifier/blob/master/examples/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb).
 
