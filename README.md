@@ -305,14 +305,13 @@ curl -k -X GET https://<ipaddr>:31843/v1/preauth/validateAuth -u <username>:<pas
 ```
 
 To access the model for online predictions use the following curl command where:
-* <ipaddr> is the IP address of the IBM Cloud Private for Data cluster.
-* <token> is the bearer token that was returned by the above command.
-* <input_payload> is the input json payload used for prediction.
+
+* `<ipaddr>` is the IP address of the IBM Cloud Private for Data cluster.
+* `<token>` is the bearer token that was returned by the above command.
+* `<input_payload>` is the input json payload used for prediction.
 
 ```bash
-curl -X POST -H “Authorization: Bearer <token>” 
-https://<cluster_ip>:31006/v3/wml_instances/{instance_id}/published_models/{published_
-model_id}/deployments/online -H “<input_payload>”
+curl -X POST -H "Authorization: Bearer <token>" https://<ipaddr>:31006/v3/wml_instances/{instance_id}/published_models/{published_model_id}/deployments/online -H "<input_payload>"
 ```
 
 For example:
@@ -325,6 +324,64 @@ curl -k -X POST \
   -H 'Content-Type: application/json' \
   -d '{"args":{"input_json":[{"ID":4,"Gender":"F","Status":"M","Children":2,"EstIncome":52004,"HomeOwner":"N","Age":25,"TotalDollarValueTraded":5030,"TotalUnitsTraded":23,"LargestSingleTransaction":1257,"SmallestSingleTransaction":125,"PercentChangeCalculation":3,"DaysSinceLastLogin":2,"DaysSinceLastTrade":19,"NetRealizedGains_YTD":0,"NetRealizedLosses_YTD":251}]}}'
 ```
+
+#### Python
+
+##### Install dependencies
+
+The general recommendation for Python development is to use a virtual environment ([venv](https://docs.python.org/3/tutorial/venv.html)). To install and initialize a virtual environment, use the `venv` module on Python 3 (you install the virtualenv library for Python 2.7):
+
+- [ ] In a terminal go to the cloned repo directory.
+
+   ```bash
+   cd icp4d-customer-churn-classifier
+   ```
+
+- [ ] Initialize a virtual environment.
+
+   ```bash
+   # Create the virtual environment using Python. Use one of the two commands depending on your Python version.
+   # Note, it may be named python3 on your system.
+   
+   python -m venv venv       # Python 3.X
+   virtualenv venv           # Python 2.X
+   
+   # Source the virtual environment. Use one of the two commands depending on your OS.
+   
+   source venv/bin/activate  # Mac or Linux
+   ./venv/Scripts/activate   # Windows PowerShell
+   ```
+
+   > **TIP** :bulb: To terminate the virtual environment use the `deactivate` command.
+
+- [ ] Install the Python requirements.
+
+   ```bash
+   cd stocktraderapp
+   pip install -r requirements.txt
+   python StockTraderChurn.py
+   ```
+
+- [ ] Copy the env.sample to .env.
+
+   ```bash
+   cp env.sample .env
+   ```
+
+- [ ] Edit the .env file to provide the `URL` and `TOKEN`.
+
+  * `URL` is your web service URL for scoring.
+  * `TOKEN` is your deployment access token.
+
+- [ ] Start the flask server.
+
+   ```bash
+   python StockTraderChurn.py
+   ```
+
+- [ ] Use your browser to go to http://0.0.0.0:5000 and try it out.
+
+- [ ] Use `CTRL-C` to stop the flask server.
 
 ## Sample notebook output
 
