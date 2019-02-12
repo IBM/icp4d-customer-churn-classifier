@@ -49,11 +49,12 @@ Sign in to your IBM Cloud Private for Data web client. All of the steps are perf
 2. [Load the data into Db2 Warehouse](#2-load-the-data-into-db2-warehouse)
 3. [Set up an analytics project](#3-set-up-an-analytics-project)
 4. [Create the notebook](#4-create-the-notebook)
-5. [Insert Spark DataFrame](#5-insert-spark-dataframe)
+5. [Insert a Spark DataFrame](#5-insert-a-spark-dataframe)
 6. [Run the notebook](#6-run-the-notebook)
 7. [Analyze the results](#7-analyze-the-results)
 8. [Test the model in the UI](#8-test-the-model-in-the-ui)
-9. [Use the model in an app](#9-use-the-model-in-an-app)
+9. [Deploy the model](#9-deploy-the-model)
+10. [Use the model in an app](#10-use-the-model-in-an-app)
 
 ### 1. Clone the repo
 
@@ -132,7 +133,7 @@ To create and open the notebook from a file:
 - [ ] Use drag-and-drop or click `browse` and open the `notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb` file from your cloned repo.
 - [ ] Click `Create`.
 
-### 5. Insert Spark DataFrame
+### 5. Insert a Spark DataFrame
 
 Now that you are in the notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
 
@@ -161,9 +162,9 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
 
 ### 6. Run the notebook
 
-Run the entire notebook using the menu `Cell ▷ Run All` or run the cells individually with the play button as shown here.
+- [ ] Run the entire notebook using the menu `Cell ▷ Run All` or run the cells individually with the play button as shown here.
 
-![press_play.png](doc/source/images/press_play.png)
+   ![press_play.png](doc/source/images/press_play.png)
 
 ### 7. Analyze the results
 
@@ -190,7 +191,7 @@ Run the entire notebook using the menu `Cell ▷ Run All` or run the cells indiv
 
   ![churn_risk_chart.png](doc/source/images/churn_risk_chart.png)
 
-* The model was saved and deployed with Watson Machine Learning. The resulting output includes a `scoring_endpoint`. Note that the endpoint host name (`dsxl-api`) needs to be replaced with the external IP address for remote access. We'll look further into using the model in the next sections.
+* The model was saved with Watson Machine Learning. Now, we can test the model in the UI (next section). Later, we'll deploy the model for external use via REST.
 
   ![save_model.png](doc/source/images/save_model.png)
 
@@ -208,7 +209,88 @@ You can use real-time scoring to test your model with different input values in 
 - [ ] Change some test values and click `Submit`. Use the upper-right icons to select a pie chart or bar chart.
   ![wml_test.png](doc/source/images/wml_test.png)
 
-### 9. Use the model in an app
+### 9. Deploy the model
+
+Next, we'll create a project release and tag the model under version control. We'll use model management and deployment to make the released model available as a web service (REST API).
+
+#### Commit the project changes
+
+- [ ] Go back to the project homepage. You can see a "**Changes made**" message. Click on `commit and push`.
+
+   ![changes_made.png](doc/source/images/changes_made.png)
+
+- [ ] You will see there is a list of the assets that are created in this project. Provide a `Commit message` to identify and make note of changes being pushed. Provide a version tag under `Create version tag for release`. Please note that the tag and commit message are both very important to identify and deploy the changes.
+
+   ![commit_and_push.png](doc/source/images/commit_and_push.png)
+
+- [ ] Click the `Commit and push` button.
+
+#### Create a project release
+
+Now that we have a committed and tagged version of the project, we can create a project release and deploy it as a web service.
+
+- [ ] Use the left menu's `Analyze` drop-down list and click on `Model management & deployment`.
+
+   ![mmd.png](doc/source/images/mmd.png)
+
+- [ ] Click on `Project release` to create the deployment.
+
+- [ ] Give it a name that you can easily track. `Route` will be a part of the url. It should be lowercase. Choose the target source project and tag that you created above. Click the `Create` button.
+
+   ![release.png](doc/source/images/release.png)
+
+This project release is created.
+
+#### Create an online and batch deployment for the deployed model
+
+- [ ] Under the `Assets` tab, select the model you just created and then click the upper-right `+ web service` button. This will add an online deployment service for this model.
+
+   ![add_web_service.png](doc/source/images/add_web_service.png)
+
+- [ ] Choose whether you want to reserve resources and how many replicas you want for this job.
+
+- [ ] Click the `Create` button.
+
+   ![create_web_service.png](doc/source/images/create_web_service.png)
+
+   > Note: At this time, the online deployment is created. You can also find the REST API and deployment token under the `API` tab.
+
+   ![deployment_token.png](doc/source/images/deployment_token.png)
+
+The deployment is still not active. We need to launch and enable it before it can be used.
+
+#### Launch deployment
+
+- [ ] Under the `Deployments` tab, there are jobs that we just created. You will find that they are currently disabled.
+
+- [ ] Click `Launch` on the top right to activate those deployments. This may take few seconds.
+
+- [ ] The onlinescore job is still disabled because there are extra steps to enable it. Click on the action menu (vertical 3 dots) and select `Enable`. This may take a little longer. Wait until `AVAILABILITY` shows `Enabled`.
+
+   ![launch.png](doc/source/images/launch.png)
+
+#### Deployment test
+
+Test the model in the API interface.
+
+- [ ] Click the enabled deployment. Under the `API` tab, we can test the model.
+- [ ] There may be some inputs with `INSERT_VALUE`. Simply change them into values that makes sense.
+
+   ![deployment_test.png](doc/source/images/deployment_test.png)
+
+- [ ] Click `Submit`. The result is shown on right with inputs and prediction results.
+- [ ] You can click the `Generate Code` button to get the code for external use.
+- [ ] Under `Overview`, you can copy the POST API and deployment token. Save it for future reference and use of the model for scoring with the REST API endpoint.
+
+   > Note: For any additional changes made to the project, just update the MMD environment with the new tag, and the new version of assets are ready to be deployed.
+
+   ![update.png](doc/source/images/update.png)
+
+The Dashboard shows all of the deployment results. This includes the performance of each evaluation. The thresholds you defined for evaluation will indicate how the deployed model is performing in real-time. “Green” indicates good performance, “amber” indicates mediocre and “red” indicates a poorly performing model. For underperforming models, you can go back to the notebook, make changes until the model performs well, and then reploy the updated model. That’s how the dashboard helps with the machine learning model life cycle management.
+
+   ![dashboard.png](doc/source/images/dashboard.png)
+
+### 10. Use the model in an app
 
 You can also access the Watson Machine Learning services directly through REST APIs. This allows you to use your model for inference in any of your apps.
 
