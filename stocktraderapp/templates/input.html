@@ -1,74 +1,84 @@
+<!--
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ * -->
 {% extends "layout.html" %}
 {% block body %}
 
-<br>
-<br>
 <h2>Will a stock trader stay or leave?</h2>
 <p>Input the following information and click submit to make a prediction.</p>
-<br>
 
 <form action="#" method="post" class="add-entry">
     <dl>
         <dt>Age:</dt>
         <dd>
             <input type="number" min="18" max="100" step="" name="Age" id="Age" value="30" required onchange="show_value_Age(this.value)">
-        </dd><br>
+        </dd>
         <dt>Gender:</dt>
         <dd><label><input type="radio" name="Gender" value="F" checked> Female</label>
             <label><input type="radio" name="Gender" value="M"> Male</label>
-        </dd><br>
+        </dd>
         <dt>Status:</dt>
         <dd><label><input type="radio" name="Status" value="S" checked> Single</label>
             <label><input type="radio" name="Status" value="M"> Married</label>
-        </dd><br>
+        </dd>
         <dt>Children:</dt>
         <dd><label><input type="radio" name="Children" value="0" checked> 0</label>
             <label><input type="radio" name="Children" value="1"> 1</label>
             <label><input type="radio" name="Children" value="2"> 2 or more</label>
-        </dd><br>
+        </dd>
         <dt>Home Owner:</dt>
         <dd><label><input type="radio" name="Homeowner" value="Y" checked> Yes</label>
             <label><input type="radio" name="Homeowner" value="N"> No</label>
-        </dd><br>
+        </dd>
         <dt>Estimated Income:</dt>
         <dd>
-            <input type="button" value="-$10K" onClick="subtract_one_Income()">
+            <input type="button" value="-" onClick="subtract_one_Income()">
             $<input type="number" min="0" max="100000" step="" name="Income" id="Income" value="50000" required onchange="show_value_Income(this.value)">
-            <input type="button" value="+$10K" onClick="add_one_Income()">
+            <input type="button" value="+" onClick="add_one_Income()">
             {#<span id="slider_value_Income" style="color:blue;font-weight:bold;"></span><br><br>#}
-        </dd><br>
+        </dd>
         <dt>Net Realized Gains YTD:</dt>
         <dd>
             $<input type="number" min="0" max="1000" step="" name="Netrealizedgainsytd" id="Netrealizedgainsytd" value="0" required onchange="show_value_Netrealizedgainsytd(this.value)">
-        </dd><br>
+        </dd>
         <dt>Net Reazlied Losses YTD:</dt>
         <dd>
             $<input type="number" min="0" max="1000" step="" name="Netrealizedlossesytd" id="Netrealizedlossesytd" value="0" required onchange="show_value_Netrealizedlossesytd(this.value)">
-        </dd><br>
+        </dd>
         <dt>Smallest Single Transaction:</dt>
         <dd>
             $<input type="number" min="0" max="10000" step="" name="Smallestsingletransaction" id="Smallestsingletransaction" value="5000" required onchange="show_value_Smallestsingletransaction(this.value)">
-        </dd><br>
+        </dd>
         <dt>Largest Single Transaction:</dt>
         <dd>
             $<input type="number" min="0" max="10000" step="" name="Largestsingletransaction" id="Largestsingletransaction" value="5000" required onchange="show_value_Largestsingletransaction(this.value)">
-        </dd><br>
+        </dd>
         <dt>Total Dollar Value Traded:</dt>
         <dd>
             $<input type="number" min="0" max="30000" step="" name="Totaldollarvaluetraded" id="Totaldollarvaluetraded" value="15000" required onchange="show_value_Totaldollarvaluetraded(this.value)">
-        </dd><br>
+        </dd>
         <dt>Total Units Traded:</dt>
         <dd>
             <input type="number" min="0" max="300" step="" name="Totalunitstraded" id="Totalunitstraded" value="150" required onchange="show_value_Totalunitstraded(this.value)">
-        </dd><br>
+        </dd>
         <dt>Days Since Last Login:</dt>
         <dd>
             <input type="number" min="0" max="30" step="" name="Dayssincelastlogin" id="Dayssincelastlogin" value="10" required onchange="show_value_Dayssincelastlogin(this.value)">
-        </dd><br>
+        </dd>
         <dt>Days Since Last Trade:</dt>
         <dd>
             <input type="number" min="0" max="30" step="" name="Dayssincelasttrade" id="Dayssincelasttrade" value="10" required onchange="show_value_Dayssincelasttrade(this.value)">
-        </dd><br>
+        </dd>
         <dt>Percentage Change Calculation:</dt>
         <dd>
             0 <input type="range" min="0" max="100" step="1" name="Percentagechangecalculation" id="Percentagechangecalculation" value="5" onchange="show_value_NumberOfCards(this.value)"> 100

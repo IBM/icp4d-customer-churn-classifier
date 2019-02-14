@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
 
+import json
 import os
 import requests
 from dotenv import load_dotenv
@@ -93,12 +105,16 @@ class mortgagedefault():
                 json=payload_scoring,
                 headers=header_online)
             result = response_scoring.text
+            result_json = json.loads(result)
             print("DXK-Result is ")
             print(result)
-            flash('Successful Prediction')
+            churn_risk = result_json["result"]["predictions"][0].lower()
+            flash(
+              'The risk of this customer churning is %s ' % churn_risk)
             return render_template(
                 'score.html',
-                result=result,
+                result=result_json,
+                churn_risk=churn_risk,
                 response_scoring=response_scoring)
 
         else:
