@@ -11,6 +11,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import json
 import os
 import requests
 from dotenv import load_dotenv
@@ -104,12 +105,16 @@ class mortgagedefault():
                 json=payload_scoring,
                 headers=header_online)
             result = response_scoring.text
+            result_json = json.loads(result)
             print("DXK-Result is ")
             print(result)
-            flash('Successful Prediction')
+            churn_risk = result_json["result"]["predictions"][0].lower()
+            flash(
+              'The risk of this customer churning is %s ' % churn_risk)
             return render_template(
                 'score.html',
-                result=result,
+                result=result_json,
+                churn_risk=churn_risk,
                 response_scoring=response_scoring)
 
         else:

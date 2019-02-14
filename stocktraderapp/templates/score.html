@@ -11,17 +11,57 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  * -->
- 
+
 {% extends "layout.html" %}
 {% block body %}
 
-<br>
-<br>
+  <head>
+    <br>
+    <h2>Customer churn risk prediction and suggested offer</h2>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script> var result_json = {{ result|tojson }}; </script>
+    <script type="text/javascript">
 
+      var predictions = [['Class', 'Probability']];
+      var result = result_json.result;
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        for(var i=0 ; i < result.classes.length ; i++) {
+          predictions[i+1] = [result.classes[i], result.probabilities[0][i] * 100];
+        }
+        var data = google.visualization.arrayToDataTable(predictions);
+
+        var options = {
+          title: 'Probability of Risk Class',
+          pieHole: 0.4,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+      <br/>
+      {% if churn_risk == 'low' %}
+      This customer has <strong>low</strong> churn risk. The recommended offer is <strong>3 free trades</strong>.
+      {% elif churn_risk == 'medium' %}
+      This customer has <strong>medium</strong> churn risk. The recommended offer is <strong>5 free trades</strong>.
+      {% elif churn_risk == 'high' %}
+      This customer has <strong>high</strong> churn risk. The recommended offer is <strong>5 free trades plus a free consult from a wealth management advisor</strong>.
+      {% endif %}
+    </div>
+    <div id="donutchart" style="width: 100%; height: 500px;"></div>
+  </body>
+
+<h2>Characteristics Analyzed</h2>
+<br>
 <table>
   <tr>
-    <th>Your Input</th>
-    <th>Response</th>
+    <th>Attribute</th>
+    <th>Value</th>
   </tr>
   <tr>
     <td>Age</td>
@@ -85,16 +125,12 @@
   </tr>
 </table>
 
-<br>
-<br>
-    <h2>Probability of stock trader churn </h2>
-
-{{request.form['prediction']}}
-{{request.form['probability']}}
+<!-- Uncomment to debug:
 {{ response_scoring.json()["result"] }}
+-->
 
 <br>
-<p><strong>Click the Stock Trader Churn link in the navigation bar above to make another prediction.</strong></p>
+<p>Click the reset link to make another prediction.</p>
 
 
 {% endblock %}

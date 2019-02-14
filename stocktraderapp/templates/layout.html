@@ -11,7 +11,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  * -->
- 
+
 <!doctype html>
 
 <html lang="en">
@@ -22,25 +22,24 @@
 	<meta http-equiv="Expires" content="0" />
 	<title>Stock Trader Churn</title>
 	<script type="text/javascript" src="static/range.js"></script>
-	<script type="text/javascript" src="static/save.js"></script>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 
 <div class="page">
-  <h1>Stock Trader Churn</h1>
+  <img height="60" src="{{ url_for('static', filename='Watson.png') }}" />
+  <h1>&nbsp;&nbsp; Stock Trader Churn Predictor</h1>
   <div class="metanav">
-  	<a class="" href="/">Stock Trader Churn</a>
+    <a class="" href="/">Reset</a>
   </div>
-
-<center><image src="{{ url_for('static', filename='Watson.png') }}" /></center>
-
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
   {% block body %}{% endblock %}
+      <div class="metanav">
+        <a class="" href="/">Reset</a>
+      </div>
     </div>
 
 <footer>
-October 12, 2018
 </footer>
