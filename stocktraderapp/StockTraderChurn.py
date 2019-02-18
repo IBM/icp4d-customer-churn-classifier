@@ -69,31 +69,31 @@ class mortgagedefault():
               'PercentageChangeCalculation'] = PercentageChangeCalculation
 
             scoring_href = os.environ.get('URL')
-            mltoken = ('Bearer %s' % os.environ.get('TOKEN'))
+            mltoken = os.environ.get('TOKEN')
 
             if not (scoring_href and mltoken):
                 raise EnvironmentError('Env vars URL and TOKEN are required.')
 
             data = {
                 "ID": ID,
-                "Gender": Gender,
-                "Status": Status,
-                "Children": Children,
-                "EstIncome": EstIncome,
-                "HomeOwner": HomeOwner,
-                "Age": Age,
-                "TotalDollarValueTraded": TotalDollarValueTraded,
-                "TotalUnitsTraded": TotalUnitsTraded,
-                "LargestSingleTransaction": LargestSingleTransaction,
-                "SmallestSingleTransaction": SmallestSingleTransaction,
-                "PercentChangeCalculation": PercentageChangeCalculation,
-                "DaysSinceLastLogin": DaysSinceLastLogin,
-                "DaysSinceLastTrade": DaysSinceLastTrade,
-                "NetRealizedGains_YTD": NetRealizedGainsYTD,
-                "NetRealizedLosses_YTD": NetRealizedLossesYTD}
+                "GENDER": Gender,
+                "STATUS": Status,
+                "CHILDREN": Children,
+                "ESTINCOME": EstIncome,
+                "HOMEOWNER": HomeOwner,
+                "AGE": Age,
+                "TOTALDOLLARVALUETRADED": TotalDollarValueTraded,
+                "TOTALUNITSTRADED": TotalUnitsTraded,
+                "LARGESTSINGLETRANSACTION": LargestSingleTransaction,
+                "SMALLESTSINGLETRANSACTION": SmallestSingleTransaction,
+                "PERCENTCHANGECALCULATION": PercentageChangeCalculation,
+                "DAYSSINCELASTLOGIN": DaysSinceLastLogin,
+                "DAYSSINCELASTTRADE": DaysSinceLastTrade,
+                "NETREALIZEDGAINS_YTD": NetRealizedGainsYTD,
+                "NETREALIZEDLOSSES_YTD": NetRealizedLossesYTD}
 
             payload_scoring = {"args": {"input_json": [data]}}
-            print("DXK-Payload is ")
+            print("Payload is ")
             print(payload_scoring)
             header_online = {
                 'Cache-Control': 'no-cache',
@@ -105,9 +105,8 @@ class mortgagedefault():
                 json=payload_scoring,
                 headers=header_online)
             result = response_scoring.text
+            print("Result is ", result)
             result_json = json.loads(result)
-            print("DXK-Result is ")
-            print(result)
             churn_risk = result_json["result"]["predictions"][0].lower()
             flash(
               'The risk of this customer churning is %s ' % churn_risk)
