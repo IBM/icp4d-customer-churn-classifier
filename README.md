@@ -1,9 +1,8 @@
 # Infuse AI into your application
 
-In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Private for Data. First, we will load customer demographics and trading activity data into Db2 Warehouse. Next, we'll use a Jupyter notebook to visualize the data and build hypotheses for prediction.
-Finally, the notebook will build, test, and deploy a prediction model.
+In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Private for Data. First, we will load customer demographics and trading activity data into Db2 Warehouse. Next, we'll use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
 
-The use case describes a stock trader company that can use churn prediction to target offers for at-risk customers. Once deployed, the model can be used for inference from an application using the REST API.
+The use case describes a stock trader company that can use churn prediction to target offers for at-risk customers. Once deployed, the model can be used for inference from an application using the REST API. A simple app is provided to demonstrate using the model from a Python app.
 
 When the reader has completed this code pattern, they will understand how to:
 
@@ -23,7 +22,7 @@ When the reader has completed this code pattern, they will understand how to:
 1. Jupyter notebook uses Brunel for information visualization
 1. Jupyter notebook uses Spark ML library to create a model
 1. Jupyter notebook deploys the model to Watson Machine Learning
-1. Remote applications access the model via the REST API
+1. Applications access the model via the REST API
 
 ## Prerequisites
 
@@ -78,7 +77,7 @@ If you created a Db2 Warehouse database deployment in your IBM Cloud Private for
 #### Load the data
 
 - [ ] Click on the upper-right `☰ Menu` and select `Load`.
-- [ ] Use drag-and-drop or click `browse files` and open the `data/03-mergedcustomers.csv` file from your cloned repo.
+- [ ] Use drag-and-drop or click `browse files` and open the `data/mergedcustomers.csv` file from your cloned repo.
 - [ ] Click `Next`.
 - [ ] Select or create the schema to use for the data.
 - [ ] Select or create the table to use for the data.
