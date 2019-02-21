@@ -10,8 +10,8 @@ When the reader has completed this code pattern, they will understand how to:
 * Run a Jupyter notebook
 * Visualize data using Brunel
 * Create a model using Spark ML library
-* Use Watson Machine Learning to expose the model as a RESTful API endpoint
-* Access the model from a remote app for inference (churn risk prediction)
+* Deploy the model as a web service
+* Access the model from an external app for inference (churn risk prediction)
 
 ![architecture](doc/source/images/architecture.png)
 
@@ -21,24 +21,16 @@ When the reader has completed this code pattern, they will understand how to:
 1. Jupyter notebook accesses data
 1. Jupyter notebook uses Brunel for information visualization
 1. Jupyter notebook uses Spark ML library to create a model
-1. Jupyter notebook deploys the model to Watson Machine Learning
+1. Jupyter notebook saves the model to the repository for deployment
 1. Applications access the model via the REST API
+
+## Watch the Video
+
+[![video](https://img.youtube.com/vi/rnoqAagpRaM/0.jpg)](https://www.youtube.com/watch?v=rnoqAagpRaM)
 
 ## Prerequisites
 
-This code pattern assumes you have are using IBM Cloud Platform for Data.
-
-The following add-ons are required:
-
-* Db2 Warehouse
-* Watson Machine Learning
-
-<!--
-Prereqs (for using the Db2 Warehouse add-on):
-* Install Db2 Warehouse as an add-on feature
-* A database instance needs to be created
-* The user needs to be given access to the database
- -->
+The instructions in this code pattern assume you are using IBM Cloud Platform for Data and have access to a database using the Db2 Warehouse add-on.
 
 ## Steps
 
@@ -184,13 +176,13 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
 
 * The mix of documentation, code, and output can make a Jupyter output self-explanatory. This also makes it a great environment to "show your work" if you have a hypothesis, do some analysis, and come up with a conclusion.
 
-<!--  TODO: describe and show key output/analysis
+<!--  TODO: describe and show more key output/analysis
  -->
 * Example Brunel chart:
 
   ![churn_risk_chart.png](doc/source/images/churn_risk_chart.png)
 
-* The model was saved with Watson Machine Learning. Now, we can test the model in the UI (next section). Later, we'll deploy the model for external use via REST.
+* The model was saved to the repository. Next, we will test the model in the UI. Later, we'll deploy the model for external use.
 
   ![save_model.png](doc/source/images/save_model.png)
 
@@ -252,7 +244,7 @@ This project release is created.
 
    ![create_web_service.png](doc/source/images/create_web_service.png)
 
-   > Note: At this time, the online deployment is created. You can also find the REST API and deployment token under the `API` tab.
+   > Note: At this time, the online deployment is created. You can also find the REST API URL and deployment token under the `Overview` tab.
 
    ![deployment_token.png](doc/source/images/deployment_token.png)
 
@@ -268,7 +260,11 @@ The deployment is still not active. We need to launch and enable it before it ca
 
    ![launch.png](doc/source/images/launch.png)
 
-#### Deployment test
+   > Note: For any additional changes made to the project, just update the MMD environment with the new tag, and the new version of assets are ready to be deployed.
+
+   ![update.png](doc/source/images/update.png)
+
+#### Deployment testing in the UI
 
 Test the model in the API interface.
 
@@ -278,12 +274,25 @@ Test the model in the API interface.
    ![deployment_test.png](doc/source/images/deployment_test.png)
 
 - [ ] Click `Submit`. The result is shown on right with inputs and prediction results.
-- [ ] You can click the `Generate Code` button to get the code for external use.
-- [ ] Under `Overview`, you can copy the POST API and deployment token. Save it for future reference and use of the model for scoring with the REST API endpoint.
+- [ ] You can click the `Generate Code` button to get the code for [deployment testing using curl](#deployment-testing-with-curl).
+- [ ] Under `Overview`, you can copy the POST API and deployment token. Save it for [using the model in an app](#10-use-the-model-in-an-app).
 
-   > Note: For any additional changes made to the project, just update the MMD environment with the new tag, and the new version of assets are ready to be deployed.
+#### Deployment testing with curl
 
-   ![update.png](doc/source/images/update.png)
+Using curl on the command line is a good way to test the REST APIs before integrating them with more complicated code. To access the model, use the generated code obtained during [deployment testing in the UI](#deployment-testing-in-the-ui).
+
+For example, in a terminal run a `curl` command like the following:
+
+```bash
+curl -k -X POST \
+  https://9.10.111.122:31843/dmodel/v1/churn1/pyscript/churn/score \
+  -H 'Authorization: Bearer yeJhbGaaaiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyAAA2VybmFtZSI6InN0dXJkZXZhbnQiLCJwYWNrYWdlTmFtZSI6InJlbGVhc2UxIIIicGFja2FnZVJvdXRlIjoiY2h1cm4xIiwiaWF0IjoxNTQ5Njg0NTg0fQ.BBBBXw48b0MN-TslNNN8e8ZASEW1xWPSen8-1o696i54U4v75wJjiQmGMs-xMe44444yq62qE8zNvXEsHM8TnnAEfaFPvokEgWtKpduWSQo1SAKch-bQhfhMJUK2wetYsUpOw5Gffuamd_jkqqQlqi4asbL_DSGBbHhNx-nnnnnsnMKm7giBa8IgtFrf6JITVIwS2xbob2t1xE_ztG0p43KK1UrddPBpztqifQybH_zbdEPOoF6Xf-ZRBcDkRMHbhC-FFF7saWLkX3AYmCboLzatB0_ufLOy2S2TosSie_UPKOS0aLcXjJDMbgsGqy9C_AsK5n28HysmH2NeXzEN9A' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -d '{"args":{"input_json":[{"ID":4,"GENDER":"F","STATUS":"M","CHILDREN":2,"ESTINCOME":52004,"HOMEOWNER":"N","AGE":25,"TOTALDOLLARVALUETRADED":5030,"TOTALUNITSTRADED":23,"LARGESTSINGLETRANSACTION":1257,"SMALLESTSINGLETRANSACTION":125,"PERCENTCHANGECALCULATION":3,"DAYSSINCELASTLOGIN":2,"DAYSSINCELASTTRADE":19,"NETREALIZEDGAINS_YTD":0,"NETREALIZEDLOSSES_YTD":251}]}}'
+```
+
+#### Deployment dashboard
 
 The Dashboard shows all of the deployment results. This includes the performance of each evaluation. The thresholds you defined for evaluation will indicate how the deployed model is performing in real-time. “Green” indicates good performance, “amber” indicates mediocre and “red” indicates a poorly performing model. For underperforming models, you can go back to the notebook, make changes until the model performs well, and then reploy the updated model. That’s how the dashboard helps with the machine learning model life cycle management.
 
@@ -291,40 +300,9 @@ The Dashboard shows all of the deployment results. This includes the performance
 
 ### 10. Use the model in an app
 
-You can also access the Watson Machine Learning services directly through REST APIs. This allows you to use your model for inference in any of your apps.
+You can also access the web service directly through the REST API. This allows you to use your model for inference in any of your apps.
 
-#### curl
-
-Using curl on the command line is a good way to test the REST APIs before integrating them with more complicated code.
-
-You need to generate a bearer token before you access any of the Watson Machine Learning APIs. Use the following curl command to generate the bearer token for accessing Watson Machine Learning services. Replace `<ipaddr>`, `<username>`, and `<password>` with your IBM Cloud Private for Data cluster IP address, username and password.
-
-```bash
-curl -k -X GET https://<ipaddr>:31843/v1/preauth/validateAuth -u <username>:<password>
-```
-
-To access the model for online predictions use the following curl command where:
-
-* `<ipaddr>` is the IP address of the IBM Cloud Private for Data cluster.
-* `<token>` is the bearer token that was returned by the above command.
-* `<input_payload>` is the input json payload used for prediction.
-
-```bash
-curl -X POST -H "Authorization: Bearer <token>" https://<ipaddr>:31006/v3/wml_instances/{instance_id}/published_models/{published_model_id}/deployments/online -H "<input_payload>"
-```
-
-For example:
-
-```bash
-curl -k -X POST \
-  https://:31843/dmodel/v1/churn1/pyscript/churn/score \
-  -H 'Authorization: Bearer yeJhbGaaaiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyAAA2VybmFtZSI6InN0dXJkZXZhbnQiLCJwYWNrYWdlTmFtZSI6InJlbGVhc2UxIIIicGFja2FnZVJvdXRlIjoiY2h1cm4xIiwiaWF0IjoxNTQ5Njg0NTg0fQ.BBBBXw48b0MN-TslNNN8e8ZASEW1xWPSen8-1o696i54U4v75wJjiQmGMs-xMe44444yq62qE8zNvXEsHM8TnnAEfaFPvokEgWtKpduWSQo1SAKch-bQhfhMJUK2wetYsUpOw5Gffuamd_jkqqQlqi4asbL_DSGBbHhNx-nnnnnsnMKm7giBa8IgtFrf6JITVIwS2xbob2t1xE_ztG0p43KK1UrddPBpztqifQybH_zbdEPOoF6Xf-ZRBcDkRMHbhC-FFF7saWLkX3AYmCboLzatB0_ufLOy2S2TosSie_UPKOS0aLcXjJDMbgsGqy9C_AsK5n28HysmH2NeXzEN9A' \
-  -H 'Cache-Control: no-cache' \
-  -H 'Content-Type: application/json' \
-  -d '{"args":{"input_json":[{"ID":4,"Gender":"F","Status":"M","Children":2,"EstIncome":52004,"HomeOwner":"N","Age":25,"TotalDollarValueTraded":5030,"TotalUnitsTraded":23,"LargestSingleTransaction":1257,"SmallestSingleTransaction":125,"PercentChangeCalculation":3,"DaysSinceLastLogin":2,"DaysSinceLastTrade":19,"NetRealizedGains_YTD":0,"NetRealizedLosses_YTD":251}]}}'
-```
-
-#### Python
+#### Running the example Python web app
 
 ##### Install dependencies
 
@@ -358,7 +336,6 @@ The general recommendation for Python development is to use a virtual environmen
    ```bash
    cd stocktraderapp
    pip install -r requirements.txt
-   python StockTraderChurn.py
    ```
 
 - [ ] Copy the env.sample to .env.
@@ -371,6 +348,26 @@ The general recommendation for Python development is to use a virtual environmen
 
   * `URL` is your web service URL for scoring.
   * `TOKEN` is your deployment access token.
+  ```bash
+  # Copy this file to .env.
+  # Edit the .env file with the required settings before starting the app.
+
+  # Required: Provide your web service URL for scoring.
+  # E.g., URL=https://9.10.222.3:31843/dmodel/v1/project/pyscript/tag/score
+
+  URL=
+
+  # Required: Provide your web service deployment access token.
+  #           This TOKEN should start with "Bearer ".
+  # E.g., TOKEN=Bearer abCdwFghIjKLMnO1PqRsTuV2wWX3YzaBCDE4.fgH1r2... (and so on, tokens are long).
+
+  TOKEN=
+
+  # Optional: You can override the server's host and port here.
+
+  HOST=0.0.0.0
+  PORT=5000
+  ```
 
 - [ ] Start the flask server.
 
@@ -380,7 +377,7 @@ The general recommendation for Python development is to use a virtual environmen
 
 - [ ] Use your browser to go to http://0.0.0.0:5000 and try it out.
 
-- [ ] Use `CTRL-C` to stop the flask server.
+- [ ] Use `CTRL-C` to stop the flask server when you are done.
 
 ## Sample notebook output
 
