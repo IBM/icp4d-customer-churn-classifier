@@ -1,6 +1,6 @@
 # Infuse AI into your application
 
-In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Private for Data. First, we will load customer demographics and trading activity data into Db2 Warehouse. Next, we'll use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
+In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Pak for Data. First, we will load customer demographics and trading activity data into Db2 Warehouse. Next, we'll use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
 
 The use case describes a stock trader company that can use churn prediction to target offers for at-risk customers. Once deployed, the model can be used for inference from an application using the REST API. A simple app is provided to demonstrate using the model from a Python app.
 
@@ -34,7 +34,7 @@ The instructions in this code pattern assume you are using IBM Cloud Platform fo
 
 ## Steps
 
-Sign in to your IBM Cloud Private for Data web client. All of the steps are performed using the web client unless stated otherwise.
+Sign in to your IBM Cloud Pak for Data web client. All of the steps are performed using the web client unless stated otherwise.
 
 1. [Clone the repo](#1-clone-the-repo)
 2. [Load the data into Db2 Warehouse](#2-load-the-data-into-db2-warehouse)
@@ -57,7 +57,7 @@ git clone https://github.com/IBM/icp4d-customer-churn-classifier
 
 ### 2. Load the data into Db2 Warehouse
 
-If you created a Db2 Warehouse database deployment in your IBM Cloud Private for Data cluster, you can access the integrated database console to complete common tasks, such as loading data into the database. This is a prerequisite to follow the instructions here and in the notebook, but you could easily adapt this code pattern to accept the data from another source.
+If you created a Db2 Warehouse database deployment in your IBM Cloud Pak for Data cluster, you can access the integrated database console to complete common tasks, such as loading data into the database. This is a prerequisite to follow the instructions here and in the notebook, but you could easily adapt this code pattern to accept the data from another source.
 
 #### Open the database
 
@@ -162,13 +162,13 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
 #### When the notebook was created
 
 * A pod was instantiated – which means loading a complete compute Jupyter notebook environment (7+ GB) with all the artifacts from the private ICP-D registry.
-* IBM Cloud Private schedules this pod on any VM – wherever CPU and memory resources are available.
+* This pod is scheduled on any VM in your cluster – wherever CPU and memory resources are available.
 * IP addresses and connections are all configured automatically.
 * The same working environment can be used by multiple users. If a single pod's resources are not sufficient, another environment is created automatically.
 * When the number of users grow, you can add more machines to the ICP-D cluster and scheduling of resources is handled automatically.
 * ICP-D's scale-out model is pretty effective.
 * You no longer have to wait days or even weeks to get the compute resources.
-* IBM Cloud Private makes 40 – 60 percent more efficient use of compute resources. This means more users can be accommodated with same compute capacity. As one task completes, its resources are freed up to work on next one.
+* More users can be accommodated with same compute capacity. As one task completes, its resources are freed up to work on next one.
 
 #### When you ran the notebook
 
@@ -188,7 +188,7 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
 
 ### 8. Test the model in the UI
 
-IBM Cloud Private for Data provides various options for analytics models such as testing, scoring, evaluating, and publishing.
+IBM Cloud Pak for Data provides various options for analytics models such as testing, scoring, evaluating, and publishing.
 
 #### Interactive testing
 
