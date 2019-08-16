@@ -30,7 +30,7 @@ When the reader has completed this code pattern, they will understand how to:
 
 ## Prerequisites
 
-The instructions in this code pattern assume you are using IBM Cloud Platform for Data and have access to a database using the Db2 Warehouse add-on.
+The instructions in this code pattern assume you are using IBM Cloud Pak for Data and have access to a database using the Db2 Warehouse add-on.
 
 ## Steps
 
@@ -319,12 +319,12 @@ The general recommendation for Python development is to use a virtual environmen
    ```bash
    # Create the virtual environment using Python. Use one of the two commands depending on your Python version.
    # Note, it may be named python3 on your system.
-   
+
    python -m venv venv       # Python 3.X
    virtualenv venv           # Python 2.X
-   
+
    # Source the virtual environment. Use one of the two commands depending on your OS.
-   
+
    source venv/bin/activate  # Mac or Linux
    ./venv/Scripts/activate   # Windows PowerShell
    ```
