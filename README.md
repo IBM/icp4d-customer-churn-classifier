@@ -1,12 +1,12 @@
 # Infuse AI into your application
 
-In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Pak for Data. First, we will load customer demographics and trading activity data into Db2 Warehouse. Next, we'll use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
+In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Pak for Data. The basis for our model will a data set that contains customer demographics and trading activity data. We will use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
 
 The use case describes a stock trader company that can use churn prediction to target offers for at-risk customers. Once deployed, the model can be used for inference from an application using the REST API. A simple app is provided to demonstrate using the model from a Python app.
 
 When the reader has completed this code pattern, they will understand how to:
 
-* Load data into Db2 Warehouse
+* Load data as either locally, or optionally into a Db2 Warehouse
 * Run a Jupyter notebook
 * Visualize data using Brunel
 * Create a model using Spark ML library
@@ -17,7 +17,7 @@ When the reader has completed this code pattern, they will understand how to:
 
 ## Flow
 
-1. Data is loaded into Db2 Warehouse
+1. Data is loaded locally, or optionally into a Db2 Warehouse
 1. Jupyter notebook accesses data
 1. Jupyter notebook uses Brunel for information visualization
 1. Jupyter notebook uses Spark ML library to create a model
@@ -30,22 +30,23 @@ When the reader has completed this code pattern, they will understand how to:
 
 ## Prerequisites
 
-The instructions in this code pattern assume you are using IBM Cloud Pak for Data and have access to a database using the Db2 Warehouse add-on.
+The instructions in this code pattern assume you are using IBM Cloud Pak for Data.
 
 ## Steps
 
 Sign in to your IBM Cloud Pak for Data web client. All of the steps are performed using the web client unless stated otherwise.
 
 1. [Clone the repo](#1-clone-the-repo)
-2. [Load the data into Db2 Warehouse](#2-load-the-data-into-db2-warehouse)
-3. [Set up an analytics project](#3-set-up-an-analytics-project)
-4. [Create the notebook](#4-create-the-notebook)
-5. [Insert a Spark DataFrame](#5-insert-a-spark-dataframe)
+2. [Set up an analytics project](#2-set-up-an-analytics-project)
+3. [Create the notebook](#3-create-the-notebook)
+4. [Insert Pandas DataFrame](#4-insert-pandas-dataframe)
+5. [Initialize Watson Machine Learning client](#5-initialize-watson-machine-learning-client)
 6. [Run the notebook](#6-run-the-notebook)
 7. [Analyze the results](#7-analyze-the-results)
 8. [Test the model in the UI](#8-test-the-model-in-the-ui)
 9. [Deploy the model](#9-deploy-the-model)
 10. [Use the model in an app](#10-use-the-model-in-an-app)
+11. [(OPTIONAL) Use Db2 Warehouse to store customer data](#11-optional-use-db2-warehouse-to-store-customer-data)
 
 ### 1. Clone the repo
 
@@ -55,36 +56,7 @@ Clone the `icp4d-customer-churn-classifier` repo locally. In a terminal, run the
 git clone https://github.com/IBM/icp4d-customer-churn-classifier
 ```
 
-### 2. Load the data into Db2 Warehouse
-
-If you created a Db2 Warehouse database deployment in your IBM Cloud Pak for Data cluster, you can access the integrated database console to complete common tasks, such as loading data into the database. This is a prerequisite to follow the instructions here and in the notebook, but you could easily adapt this code pattern to accept the data from another source.
-
-#### Open the database
-
-- [ ] Use the left menu's `Collect` drop-down list and click on `My data`.
-- [ ] Click on the `Databases` tab.
-- [ ] You should see a Db2 Warehouse tile with a status of `Available` (otherwise revisit the prerequisites and ensure your userid has access to a database).
-- [ ] Click on the tile action menu (vertical 3 dots) and select `Open`.
-
-#### Load the data
-
-- [ ] Click on the upper-right `☰ Menu` and select `Load`.
-- [ ] Use drag-and-drop or click `browse files` and open the `data/mergedcustomers.csv` file from your cloned repo.
-- [ ] Click `Next`.
-- [ ] Select or create the schema to use for the data.
-- [ ] Select or create the table to use for the data.
-- [ ] Click `Next`.
-- [ ] Ensure that the data is being properly interpreted. For example, specify that the first row in the CSV file is a header and ensure that the comma separator is used.
-- [ ] Click `Next`.
-- [ ] Review the summary and click `Begin Load`.
-
-#### Collect the database URL and credentials
-
-- [ ] Go back to `Collect ▷ My data ▷ Databases ▷ Db2 Warehouse` tile.
-- [ ] Click on the tile action menu (vertical 3 dots) and select `Details`.
-- [ ] Copy the `Username`, `Password`, and `JDBC Connection URL` to use later.
-
-### 3. Set up an analytics project
+### 2. Set up an analytics project
 
 To get started, open the `Projects` page and set up an analytics project to hold the assets that you want to work with, and then get data for your project.
 
@@ -100,20 +72,15 @@ To get started, open the `Projects` page and set up an analytics project to hold
 
 #### Add the data asset
 
+> NOTE: You can optionally load the data into a Db2 Warehouse. For instuctions, go to [use Db2 Warehouse to store customer data](#11-optional-use-db2-warehouse-to-store-customer-data).
+
 - [ ] Use the left menu to go back to `Projects`.
 - [ ] Select the project you created.
-- [ ] In your project, use the `Data Sources` tab, and click `+ Add Data Source`.
-- [ ] Provide a `Data source name` and `Description`.
-- [ ] Use the `Data source type` drop-down list to select `Db2 Warehouse on Cloud`.
-- [ ] Fill in the `JDBC URL`, `Username`, and `Password` that you collected earlier.
-- [ ] Click the `Test Connection` button and make sure your test connection passed.
-- [ ] Click on `+ Add remote data set`.
-- [ ] Provide a `Remote data set name` and a `Description`.
-- [ ] Provide a `Schema`. This is the schema that you used when you created the table.
-- [ ] Provide the table name (that you used when you loaded the CSV data).
-- [ ] Click `Create`.
+- [ ] In your project, using the `Assets` tab, click `Data sets`.
+- [ ] Click on `+ Add Data Set`.
+- [ ] Using the `Local File` tab, use drag-and-drop or click `Select from your local file system` and select the `data/mergedcustomers.csv` data file from your cloned repo.
 
-### 4. Create the notebook
+### 3. Create the notebook
 
 To create and open the notebook from a file:
 
@@ -124,7 +91,7 @@ To create and open the notebook from a file:
 - [ ] Use drag-and-drop or click `browse` and open the `notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb` file from your cloned repo.
 - [ ] Click `Create`.
 
-### 5. Insert a Spark DataFrame
+### 4. Insert Pandas DataFrame
 
 Now that you are in the notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
 
@@ -132,23 +99,42 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
 
   ```python
   # Use the find data 10/01 icon and under your remote data set
-  # use "Insert to code" and "Insert Spark DataFrame in Python"
+  # use "Insert to code" and "Insert Pandas DataFrame
   # here.
-
+  import os, pandas as pd
+  # Add asset from file system
   ```
 
 - [ ] Click the *find data* `10/01` icon on the menu bar (last icon).
-- [ ] Using the `Remote` tab under `10/01`, find the data set that you added to the project, click `Insert to code` and `Insert Spark DataFrame in Python`.
+- [ ] Using the `Remote` tab under `10/01`, find the data set that you added to the project, click `Insert to code` and `Insert Pandas DataFrame`.
 
   ![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
 
 - [ ] The inserted code will result in a DataFrame assigned to a variable named `df1` or `df_data_1` (perhaps with a different sequence number). Find the code cell like the following code block and edit the `#` to make it match the variable name.
 
   ```python
-  # After inserting the Spark DataFrame code above, change the following
-  # df# to match the variable used in the above code. df_churn is used
+  # After inserting the pandas DataFrame code above, change the following
+  # df_data_# to match the variable used in the above code. df_churn_pd is used
   # later in the notebook.
-  df_churn = df#
+  df_churn_pd = df_data_#
+  ```
+
+### 5. Initialize Watson Machine Learning client
+
+The Watson Machine Learning client is required to save and deploy our customer churn predictive model, and should be available on your IBM Cloud Pak for Data platform. Insert the required credentials in the following cell:
+
+  ```python
+  from watson_machine_learning_client import WatsonMachineLearningAPIClient
+
+  # get URL, username and password from your IBM Cloud Pak for Data administrator
+  wml_credentials = {
+    "url": "https://X.X.X.X",
+    "instance_id": "icp",
+    "username": "****",
+    "password": "****"
+  }
+
+  client = WatsonMachineLearningAPIClient(wml_credentials)
   ```
 
 ### 6. Run the notebook
@@ -182,9 +168,13 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
 
   ![churn_risk_chart.png](doc/source/images/churn_risk_chart.png)
 
-* The model was saved to the repository. Next, we will test the model in the UI. Later, we'll deploy the model for external use.
+* The model was saved and deployed to the Watson Machine Learning service. Next, we will test the model in the UI. Later, we'll deploy the model for external use.
 
   ![save_model.png](doc/source/images/save_model.png)
+
+#### Sample notebook output
+
+See the notebook with example output [here](https://nbviewer.jupyter.org/github/IBM/icp4d-customer-churn-classifier/blob/master/examples/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb).
 
 ### 8. Test the model in the UI
 
@@ -210,21 +200,29 @@ Next, we'll create a project release and tag the model under version control. We
 
    ![changes_made.png](doc/source/images/changes_made.png)
 
-- [ ] You will see there is a list of the assets that are created in this project. Provide a `Commit message` to identify and make note of changes being pushed. Provide a version tag under `Create version tag for release`. Please note that the tag and commit message are both very important to identify and deploy the changes.
+- [ ] You will see there is a list of the assets that are created in this project. Provide a `Commit message` to identify and make note of changes being pushed.
 
-   ![commit_and_push.png](doc/source/images/commit_and_push.png)
+   ![commit.png](doc/source/images/commit.png)
 
-- [ ] Click the `Commit and push` button.
+- [ ] Click the `Commit` button.
+
+- [ ] You will see a success message, and a prompt to `push` the changes. Click on `push`.
+
+   ![push_changes.png](doc/source/images/push_changes.png)
+
+- [ ] Provide a version tag under `Create version tag for release`. Please note that the tag and commit message are both very important to identify and deploy the changes.
+
+- [ ] Click the `Push` button.
 
 #### Create a project release
 
 Now that we have a committed and tagged version of the project, we can create a project release and deploy it as a web service.
 
-- [ ] Use the left menu's `Analyze` drop-down list and click on `Model management & deployment`.
+- [ ] Use the left menu's `Administer` drop-down list and click on `Manage deployments`.
 
-   ![mmd.png](doc/source/images/mmd.png)
+   ![manage_deployments.png](doc/source/images/manage_deployments.png)
 
-- [ ] Click on `Project release` to create the deployment.
+- [ ] Click on `+ Add Project Release` to create the deployment.
 
 - [ ] Give it a name that you can easily track. `Route` will be a part of the url. It should be lowercase. Choose the target source project and tag that you created above. Click the `Create` button.
 
@@ -234,7 +232,7 @@ This project release is created.
 
 #### Create an online and batch deployment for the deployed model
 
-- [ ] Under the `Assets` tab, select the model you just created and then click the upper-right `+ web service` button. This will add an online deployment service for this model.
+- [ ] Under the `Assets` tab for the project release, select the model you just created and then click the upper-right `+ web service` button. This will add an online deployment service for this model.
 
    ![add_web_service.png](doc/source/images/add_web_service.png)
 
@@ -244,23 +242,13 @@ This project release is created.
 
    ![create_web_service.png](doc/source/images/create_web_service.png)
 
-   > Note: At this time, the online deployment is created. You can also find the REST API URL and deployment token under the `Overview` tab.
+   > Note: At this time, the online deployment is created. On the deployment panel, you can see the REST API URL `ENDPOINT` and the `DEPLOYMENT TOKEN`.
 
    ![deployment_token.png](doc/source/images/deployment_token.png)
 
-The deployment is still not active. We need to launch and enable it before it can be used.
+If successful, the deployment will turn to `Enabled` after a few seconds.
 
-#### Launch deployment
-
-- [ ] Under the `Deployments` tab, there are jobs that we just created. You will find that they are currently disabled.
-
-- [ ] Click `Launch` on the top right to activate those deployments. This may take few seconds.
-
-- [ ] The onlinescore job is still disabled because there are extra steps to enable it. Click on the action menu (vertical 3 dots) and select `Enable`. This may take a little longer. Wait until `AVAILABILITY` shows `Enabled`.
-
-   ![launch.png](doc/source/images/launch.png)
-
-   > Note: For any additional changes made to the project, just update the MMD environment with the new tag, and the new version of assets are ready to be deployed.
+   > Note: For any additional changes made to the project, just update the project release environment with a new tag, and the new version of assets are ready to be deployed.
 
    ![update.png](doc/source/images/update.png)
 
@@ -269,13 +257,16 @@ The deployment is still not active. We need to launch and enable it before it ca
 Test the model in the API interface.
 
 - [ ] Click the enabled deployment. Under the `API` tab, we can test the model.
-- [ ] There may be some inputs with `INSERT_VALUE`. Simply change them into values that makes sense.
+
+- [ ] Use the default values or use your own values to test the model.
 
    ![deployment_test.png](doc/source/images/deployment_test.png)
 
 - [ ] Click `Submit`. The result is shown on right with inputs and prediction results.
-- [ ] You can click the `Generate Code` button to get the code for [deployment testing using curl](#deployment-testing-with-curl).
-- [ ] Under `Overview`, you can copy the POST API and deployment token. Save it for [using the model in an app](#10-use-the-model-in-an-app).
+
+- [ ] You can click the `< > Generate Code` button to get the code for [deployment testing using curl](#deployment-testing-with-curl).
+
+- [ ] In the top section of the panel, you can copy the POST API endpoint and deployment token. Save it for [using the model in an app](#10-use-the-model-in-an-app).
 
 #### Deployment testing with curl
 
@@ -285,8 +276,8 @@ For example, in a terminal run a `curl` command like the following:
 
 ```bash
 curl -k -X POST \
-  https://9.10.111.122:31843/dmodel/v1/churn1/pyscript/churn/score \
-  -H 'Authorization: Bearer yeJhbGaaaiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyAAA2VybmFtZSI6InN0dXJkZXZhbnQiLCJwYWNrYWdlTmFtZSI6InJlbGVhc2UxIIIicGFja2FnZVJvdXRlIjoiY2h1cm4xIiwiaWF0IjoxNTQ5Njg0NTg0fQ.BBBBXw48b0MN-TslNNN8e8ZASEW1xWPSen8-1o696i54U4v75wJjiQmGMs-xMe44444yq62qE8zNvXEsHM8TnnAEfaFPvokEgWtKpduWSQo1SAKch-bQhfhMJUK2wetYsUpOw5Gffuamd_jkqqQlqi4asbL_DSGBbHhNx-nnnnnsnMKm7giBa8IgtFrf6JITVIwS2xbob2t1xE_ztG0p43KK1UrddPBpztqifQybH_zbdEPOoF6Xf-ZRBcDkRMHbhC-FFF7saWLkX3AYmCboLzatB0_ufLOy2S2TosSie_UPKOS0aLcXjJDMbgsGqy9C_AsK5n28HysmH2NeXzEN9A' \
+  https://169.48.4.137:31843/dmodel/v1/tradingcustomerchurn/pyscript/onlineservice/score \
+  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGFja2FnZU5hbWUiOiJUcmFkaW5nQ3VzdG9tZXJDaHVybkFuYWx5c2lzIiwicGFja2FnZVJvdXRlIjoidHJhZGluZ2N1c3RvbWVyY2h1cm4iLCJpYXQiOjE1NjgyMTM2ODd9.Xnpf3Jf0G3FMAzXCrfm80Au2ucyCcHvuvmz-R5QbrZeRBcfFc9lGyGrDupadSVudAfSGSHG51xAcDKCGB8w1HmqY-Fr5Xt-fxkfOKp0SgZQJFJV2aLiCqIfkSh-XDpD_Br_HMQ6LDjrUwtXky3O_b1684fF_Tb70AswoqQp5tLS_VJU0er8idYv6pwhpuUmtyRSxN0gKV_mQV0tQ0OZ8bCC-uk6W2pkd7MCBuJq6D0ab1m-8oRwvr2oCy7bXXAXZWpZP2v4b-rsyzpbom7pgPmRR91uWdm1jkE24fVp9NJ8x-g1B8rjGxJCO9o8DDptSwD5lyDW5Qekvc2d6aGClKw' \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
   -d '{"args":{"input_json":[{"ID":4,"GENDER":"F","STATUS":"M","CHILDREN":2,"ESTINCOME":52004,"HOMEOWNER":"N","AGE":25,"TOTALDOLLARVALUETRADED":5030,"TOTALUNITSTRADED":23,"LARGESTSINGLETRANSACTION":1257,"SMALLESTSINGLETRANSACTION":125,"PERCENTCHANGECALCULATION":3,"DAYSSINCELASTLOGIN":2,"DAYSSINCELASTTRADE":19,"NETREALIZEDGAINS_YTD":0,"NETREALIZEDLOSSES_YTD":251}]}}'
@@ -379,9 +370,90 @@ The general recommendation for Python development is to use a virtual environmen
 
 - [ ] Use `CTRL-C` to stop the flask server when you are done.
 
-## Sample notebook output
+#### Sample Output
 
-See the notebook with example output [here](https://nbviewer.jupyter.org/github/IBM/icp4d-customer-churn-classifier/blob/master/examples/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb).
+The prediction screen:
+
+   ![sample_output.png](doc/source/images/sample_output.png)
+
+Pressing `Reset` allows you to enter new values:
+
+   ![sample_output_reset.png](doc/source/images/sample_output_reset.png)
+
+### 11. (OPTIONAL) Use Db2 Warehouse to store customer data
+
+This section provides an alternative to accessing a local csv file in your notebook. This requires that you have created a Db2 Warehouse database deployment in your IBM Cloud Pak for Data cluster. With it, you can access the integrated database console to complete common tasks, such as loading data into the database.
+
+#### Open the database
+
+- [ ] Use the left menu's `Collect` drop-down list and click on `My data`.
+- [ ] Click on the `Databases` tab.
+- [ ] You should see a Db2 Warehouse tile with a status of `Available` (otherwise revisit the prerequisites and ensure your userid has access to a database).
+- [ ] Click on the tile action menu (vertical 3 dots) and select `Open`.
+
+#### Load the data
+
+- [ ] Click on the upper-right `☰ Menu` and select `Load`.
+- [ ] Use drag-and-drop or click `browse files` and open the `data/mergedcustomers.csv` file from your cloned repo.
+- [ ] Click `Next`.
+- [ ] Select or create the schema to use for the data.
+- [ ] Select or create the table to use for the data.
+- [ ] Click `Next`.
+- [ ] Ensure that the data is being properly interpreted. For example, specify that the first row in the CSV file is a header and ensure that the comma separator is used.
+- [ ] Click `Next`.
+- [ ] Review the summary and click `Begin Load`.
+
+#### Collect the database URL and credentials
+
+- [ ] Go back to `Collect ▷ My data ▷ Databases ▷ Db2 Warehouse` tile.
+- [ ] Click on the tile action menu (vertical 3 dots) and select `Details`.
+- [ ] Copy the `Username`, `Password`, and `JDBC Connection URL` to use later.
+
+#### Add the data asset
+
+- [ ] If needed, create a project using the instructions in [set up an analytics project](#2-set-up-an-analytics-project).
+- [ ] Use the left menu to go back to `Projects`.
+- [ ] Select the project you created.
+- [ ] In your project, use the `Data Sources` tab, and click `+ Add Data Source`.
+- [ ] Provide a `Data source name` and `Description`.
+- [ ] Use the `Data source type` drop-down list to select `Db2 Warehouse on Cloud`.
+- [ ] Fill in the `JDBC URL`, `Username`, and `Password` that you collected earlier.
+- [ ] Click the `Test Connection` button and make sure your test connection passed.
+- [ ] Click on `+ Add remote data set`.
+- [ ] Provide a `Remote data set name` and a `Description`.
+- [ ] Provide a `Schema`. This is the schema that you used when you created the table.
+- [ ] Provide the table name (that you used when you loaded the CSV data).
+- [ ] Click `Create`.
+
+#### Insert a Spark DataFrame in your notebook
+
+Follow the instructions above for creating your project and notebook. Then, in your notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
+
+- [ ] Place your cursor at the last line of the following cell:
+
+  ```python
+  # Use the find data 10/01 icon and under your remote data set
+  # use "Insert to code" and "Insert Spark DataFrame in Python"
+  # here.
+
+  ```
+
+- [ ] Click the *find data* `10/01` icon on the menu bar (last icon).
+- [ ] Using the `Remote` tab under `10/01`, find the data set that you added to the project, click `Insert to code` and `Insert Spark DataFrame in Python`.
+
+  ![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
+
+- [ ] The inserted code will result in a DataFrame assigned to a variable named `df1` or `df_data_1` (perhaps with a different sequence number). Find the code cell like the following code block and edit the `#` to make it match the variable name.
+
+  ```python
+  # After inserting the Spark DataFrame code above, change the following
+  # df# to match the variable used in the above code. df_churn is used
+  # later in the notebook.
+  df_churn = df#
+  ```
+#### Complete the code pattern
+
+Once the notebook completes and your model is created, you can deploy and access your model just as before, starting with the step [test the model in the UI](#8-test-the-model-in-the-ui).
 
 ## License
 
