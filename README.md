@@ -216,7 +216,7 @@ Next, we'll create a project release and tag the model under version control. We
 
 #### Create a project release
 
-Now that we have a committed and tagged version of the project, we can create a project release and deploy it as a web service.
+Now that we have a committed and tagged version of the project, we can create a project release to deploy our model.
 
 - [ ] Use the left menu's `Administer` drop-down list and click on `Manage deployments`.
 
@@ -224,7 +224,7 @@ Now that we have a committed and tagged version of the project, we can create a 
 
 - [ ] Click on `+ Add Project Release` to create the deployment.
 
-- [ ] Give it a name that you can easily track. `Route` will be a part of the url. It should be lowercase. Choose the target source project and tag that you created above. Click the `Create` button.
+- [ ] Give it a name that you can easily track. `Route` will be a part of the url. It should be lowercase. Select your project as the `Sourcee project`, and set `Tag` to the release tag you just created. Click the `Create` button.
 
    ![release.png](doc/source/images/release.png)
 
@@ -232,7 +232,7 @@ This project release is created.
 
 #### Create an online and batch deployment for the deployed model
 
-- [ ] Under the `Assets` tab for the project release, select the model you just created and then click the upper-right `+ web service` button. This will add an online deployment service for this model.
+- [ ] Under the `Assets` tab for your project release, select the model you just created and then click the upper-right `+ web service` button. This will add an online deployment service for this model.
 
    ![add_web_service.png](doc/source/images/add_web_service.png)
 
@@ -246,9 +246,19 @@ This project release is created.
 
    ![deployment_token.png](doc/source/images/deployment_token.png)
 
-If successful, the deployment will turn to `Enabled` after a few seconds.
+The deployment is still not active. We need to launch and enable it before it can be used.
 
-   > Note: For any additional changes made to the project, just update the project release environment with a new tag, and the new version of assets are ready to be deployed.
+#### Launch deployment
+
+- [ ] Under the `Deployments` tab for your project release, your new deployment will be set to `Disabled`. To enable it, you must first bring all of your deployments on-line by clicking the `Launch` button located at the top of the panel.
+
+   ![launch_button.png](doc/source/images/launch_button.png)
+
+- [ ] Then use the action menu (vertical 3 dots) for your deployment and select `Enable`.
+
+   ![enable_service.png](doc/source/images/enable_service.png)
+
+   > Note: For any additional changes made to your project release, use the update button to save off your changes.
 
    ![update.png](doc/source/images/update.png)
 
