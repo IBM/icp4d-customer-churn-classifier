@@ -1,12 +1,14 @@
 # Infuse AI into your application
 
-In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Pak for Data. The basis for our model will a data set that contains customer demographics and trading activity data. We will use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
+In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Pak for Data. The basis for our model is a data set that contains customer demographics and trading activity data. We will use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
+
+> This code pattern has been updated to include images from the latest version of Cloud Pak for Data, v2.1.0.2.
 
 The use case describes a stock trader company that can use churn prediction to target offers for at-risk customers. Once deployed, the model can be used for inference from an application using the REST API. A simple app is provided to demonstrate using the model from a Python app.
 
 When the reader has completed this code pattern, they will understand how to:
 
-* Load data as either locally, or optionally into a Db2 Warehouse
+* Load customer data into Db2 Warehouse
 * Run a Jupyter notebook
 * Visualize data using Brunel
 * Create a model using Spark ML library
@@ -17,7 +19,7 @@ When the reader has completed this code pattern, they will understand how to:
 
 ## Flow
 
-1. Data is loaded locally, or optionally into a Db2 Warehouse
+1. Data is loaded locally, or optionally into Db2 Warehouse
 1. Jupyter notebook accesses data
 1. Jupyter notebook uses Brunel for information visualization
 1. Jupyter notebook uses Spark ML library to create a model
@@ -39,7 +41,7 @@ Sign in to your IBM Cloud Pak for Data web client. All of the steps are performe
 1. [Clone the repo](#1-clone-the-repo)
 2. [Set up an analytics project](#2-set-up-an-analytics-project)
 3. [Create the notebook](#3-create-the-notebook)
-4. [Insert Pandas DataFrame](#4-insert-pandas-dataframe)
+4. [Insert pandas DataFrame](#4-insert-pandas-dataframe)
 5. [Initialize Watson Machine Learning client](#5-initialize-watson-machine-learning-client)
 6. [Run the notebook](#6-run-the-notebook)
 7. [Analyze the results](#7-analyze-the-results)
@@ -72,7 +74,7 @@ To get started, open the `Projects` page and set up an analytics project to hold
 
 #### Add the data asset
 
-> NOTE: You can optionally load the data into a Db2 Warehouse. For instuctions, go to [use Db2 Warehouse to store customer data](#11-optional-use-db2-warehouse-to-store-customer-data).
+> NOTE: You can optionally load the data into Db2 Warehouse. For instuctions, go to [use Db2 Warehouse to store customer data](#11-optional-use-db2-warehouse-to-store-customer-data).
 
 - [ ] Use the left menu to go back to `Projects`.
 - [ ] Select the project you created.
@@ -91,7 +93,7 @@ To create and open the notebook from a file:
 - [ ] Use drag-and-drop or click `browse` and open the `notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb` file from your cloned repo.
 - [ ] Click `Create`.
 
-### 4. Insert Pandas DataFrame
+### 4. Insert pandas DataFrame
 
 Now that you are in the notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
 
@@ -224,7 +226,7 @@ Now that we have a committed and tagged version of the project, we can create a 
 
 - [ ] Click on `+ Add Project Release` to create the deployment.
 
-- [ ] Give it a name that you can easily track. `Route` will be a part of the url. It should be lowercase. Select your project as the `Sourcee project`, and set `Tag` to the release tag you just created. Click the `Create` button.
+- [ ] Give it a name that you can easily track. `Route` will be a part of the url. It should be lowercase. Select your project as the `Source project`, and set `Tag` to the release tag you just created. Click the `Create` button.
 
    ![release.png](doc/source/images/release.png)
 
@@ -258,7 +260,7 @@ The deployment is still not active. We need to launch and enable it before it ca
 
    ![enable_service.png](doc/source/images/enable_service.png)
 
-   > Note: For any additional changes made to your project release, use the update button to save off your changes.
+   > Note: For any additional changes made to your project release, use the update button to save your changes.
 
    ![update.png](doc/source/images/update.png)
 
