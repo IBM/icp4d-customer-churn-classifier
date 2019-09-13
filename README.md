@@ -439,7 +439,7 @@ This section provides an alternative to accessing a local csv file in your noteb
 
 #### Complete the code pattern
 
-Once the notebook completes and your model is created, you can deploy and access your model just as before, starting with the step [insert pandas DataFrame](#4-insert-pandas-dataframe).
+Follow the instructions above for creating your project and notebook. Once the notebook completes and your model is created, you can deploy and access your model just as before, starting with the step [test the model in the UI](#8-test-the-model-in-the-ui).
 
 ## License
 
