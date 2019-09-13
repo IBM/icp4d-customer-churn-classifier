@@ -437,35 +437,9 @@ This section provides an alternative to accessing a local csv file in your noteb
 - [ ] Provide the table name (that you used when you loaded the CSV data).
 - [ ] Click `Create`.
 
-#### Insert a Spark DataFrame in your notebook
-
-Follow the instructions above for creating your project and notebook. Then, in your notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
-
-- [ ] Place your cursor at the last line of the following cell:
-
-  ```python
-  # Use the find data 10/01 icon and under your remote data set
-  # use "Insert to code" and "Insert Spark DataFrame in Python"
-  # here.
-
-  ```
-
-- [ ] Click the *find data* `10/01` icon on the menu bar (last icon).
-- [ ] Using the `Remote` tab under `10/01`, find the data set that you added to the project, click `Insert to code` and `Insert Spark DataFrame in Python`.
-
-  ![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
-
-- [ ] The inserted code will result in a DataFrame assigned to a variable named `df1` or `df_data_1` (perhaps with a different sequence number). Find the code cell like the following code block and edit the `#` to make it match the variable name.
-
-  ```python
-  # After inserting the Spark DataFrame code above, change the following
-  # df# to match the variable used in the above code. df_churn is used
-  # later in the notebook.
-  df_churn = df#
-  ```
 #### Complete the code pattern
 
-Once the notebook completes and your model is created, you can deploy and access your model just as before, starting with the step [test the model in the UI](#8-test-the-model-in-the-ui).
+Once the notebook completes and your model is created, you can deploy and access your model just as before, starting with the step [insert pandas DataFrame](#4-insert-pandas-dataframe).
 
 ## License
 
