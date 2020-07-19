@@ -26,6 +26,7 @@ app.config.update(dict(
 
 labels = ["High", "Low", "Medium"]
 
+
 class mortgagedefault():
 
     @app.route('/', methods=['GET', 'POST'])
@@ -41,13 +42,13 @@ class mortgagedefault():
             EstIncome = int(request.form['Income'])
             NetRealizedGainsYTD = int(request.form['Netrealizedgainsytd'])
             NetRealizedLossesYTD = int(request.form['Netrealizedlossesytd'])
-            SmallestSingleTransaction = int(request.form['Smallestsingletransaction'])
-            LargestSingleTransaction = int(request.form['Largestsingletransaction'])
-            TotalDollarValueTraded = int(request.form['Totaldollarvaluetraded'])
+            SmallestSingleTransaction = int(request.form['Smallestsingletxn'])
+            LargestSingleTransaction = int(request.form['Largestsingletxn'])
+            TotalDollarValueTraded = int(request.form['Totaldollarvaltraded'])
             TotalUnitsTraded = int(request.form['Totalunitstraded'])
             DaysSinceLastLogin = int(request.form['Dayssincelastlogin'])
             DaysSinceLastTrade = int(request.form['Dayssincelasttrade'])
-            PercentageChangeCalculation = int(request.form['Percentagechangecalculation'])
+            PercentageChangeCalculation = int(request.form['Pctchangecalc'])
 
             session['ID'] = ID
             session['Age'] = Age
