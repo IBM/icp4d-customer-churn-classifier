@@ -20,6 +20,7 @@
     <h2>Customer churn risk prediction and suggested offer</h2>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script> var result_json = {{ result|tojson }}; </script>
+    <script> var result_labels = {{ labels|tojson}}; </script>
     <script type="text/javascript">
 
       var predictions = [['Class', 'Probability']];
@@ -27,8 +28,8 @@
       google.charts.load("current", {packages:["corechart"]});
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
-        for(var i=0 ; i < result.classes.length ; i++) {
-          predictions[i+1] = [result.classes[i], result.probabilities[0][i] * 100];
+        for(var i=0 ; i < result_labels.length ; i++) {
+          predictions[i+1] = [result_labels[i], result_json.probability[i] * 100];
         }
         var data = google.visualization.arrayToDataTable(predictions);
 
