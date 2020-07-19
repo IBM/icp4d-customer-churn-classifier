@@ -2,7 +2,7 @@
 
 In this code pattern, we will create and deploy a customer churn prediction model using IBM Cloud Pak for Data. The basis for our model is a data set that contains customer demographics and trading activity data. We will use a Jupyter notebook to visualize the data, build hypotheses for prediction, and then build, test, and save a prediction model. Finally, we will enable a web service and use the model from an app.
 
-> This code pattern has been updated to include images from the latest version of Cloud Pak for Data, v2.1.0.2.
+> This code pattern has been updated to include images from the latest version of Cloud Pak for Data, v3.0.0.
 
 The use case describes a stock trader company that can use churn prediction to target offers for at-risk customers. Once deployed, the model can be used for inference from an application using the REST API. A simple app is provided to demonstrate using the model from a Python app.
 
@@ -40,15 +40,16 @@ Sign in to your IBM Cloud Pak for Data web client. All of the steps are performe
 
 1. [Clone the repo](#1-clone-the-repo)
 2. [Set up an analytics project](#2-set-up-an-analytics-project)
-3. [Create the notebook](#3-create-the-notebook)
-4. [Insert pandas DataFrame](#4-insert-pandas-dataframe)
-5. [Initialize Watson Machine Learning client](#5-initialize-watson-machine-learning-client)
-6. [Run the notebook](#6-run-the-notebook)
-7. [Analyze the results](#7-analyze-the-results)
-8. [Test the model in the UI](#8-test-the-model-in-the-ui)
-9. [Deploy the model](#9-deploy-the-model)
-10. [Use the model in an app](#10-use-the-model-in-an-app)
-11. [(OPTIONAL) Use Db2 Warehouse to store customer data](#11-optional-use-db2-warehouse-to-store-customer-data)
+3. [Create a Space for Machine Learning Deployments](#3-create-a-space-for-machine-learning-deployments)
+4. [Create the notebook](#4-create-the-notebook)
+5. [Insert pandas DataFrame](#5-insert-pandas-dataframe)
+6. [Initialize Watson Machine Learning client](#6-initialize-watson-machine-learning-client)
+7. [Provide the deployment space information](#7-provide-the-deployment-space-information)
+8. [Run the notebook](#8-run-the-notebook)
+9. [Analyze the results](#9-analyze-the-results)
+10. [Test the model](#10-test-the-model)
+11. [Use the model in an app](#11-use-the-model-in-an-app)
+12. [(OPTIONAL) Use Db2 Warehouse to store customer data](#12-optional-use-db2-warehouse-to-store-customer-data)
 
 ### 1. Clone the repo
 
@@ -64,55 +65,91 @@ To get started, open the `Projects` page and set up an analytics project to hold
 
 #### Create a project
 
-- [ ] Go to the `Projects` list and click `+ New project`.
-- [ ] Make sure `Analytics project` is select.
-- [ ] Provide a `Project name`.
-- [ ] Click `OK`.
-- [ ] Stay on the `New` tab.
-- [ ] Optionally, add a `Description`
-- [ ] Click `Create`.
+* Launch a browser and navigate to your Cloud Pak for Data deployment.
+
+* Go to the (☰) menu and click *Projects*:
+
+![(☰) Menu -> Projects](doc/source/images/cpd-projects-menu.png)
+
+* Click on *New project*. In the dialog that pops up, select the project type as `Analytics project` and click `Next`:
+
+![Start a new project](doc/source/images/cpd-new-project.png)
+
+* Click on the top tile for `Create an empty project`:
+
+![Create an empty project](doc/source/images/cpd-create-empty-project.png)
+
+* Give the project a unique name, an optional description and click `Create`:
+
+![Pick a name](doc/source/images/cpd-new-project-name.png)
 
 #### Add the data asset
 
-> NOTE: You can optionally load the data into Db2 Warehouse. For instuctions, go to [use Db2 Warehouse to store customer data](#11-optional-use-db2-warehouse-to-store-customer-data).
+> NOTE: You can optionally load the data into Db2 Warehouse. For instuctions, go to [use Db2 Warehouse to store customer data](#12-optional-use-db2-warehouse-to-store-customer-data).
 
-- [ ] Use the left menu to go back to `Projects`.
-- [ ] Select the project you created.
-- [ ] In your project, using the `Assets` tab, click `Data sets`.
-- [ ] Click on `+ Add Data Set`.
-- [ ] Using the `Local File` tab, use drag-and-drop or click `Select from your local file system` and select the `data/mergedcustomers.csv` data file from your cloned repo.
+* In your project, on the `Assets` tab click the `01/00` icon and the `Load` tab, then either drag the [data/mergedcustomers.csv](data/mergedcustomers.csv) file from the cloned repository to the window or navigate to it using `browse for files to upload`:
 
-### 3. Create the notebook
+![Add data set](doc/source/images/cpd-add-data-set.png)
 
-To create and open the notebook from a file:
+### 3. Create a Space for Machine Learning Deployments
 
-- [ ] In your project, using the `Assets` tab, click `Notebooks`.
-- [ ] Click on `+ Add Notebook`.
-- [ ] Select the `From File` tab:
-- [ ] Provide a notebook `Name` and `Description`.
-- [ ] Use drag-and-drop or click `browse` and open the `notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb` file from your cloned repo.
-- [ ] Click `Create`.
+Before we create a machine learning model, we will have to set up a deployment space where we can save and deploy the model.
 
-### 4. Insert pandas DataFrame
+Follow the steps in this section to create a new deployment space.
+
+* Navigate to the left-hand (☰) hamburger menu and choose `Analyze` -> `Analytics deployments`:
+
+![(☰) Menu -> Analytics deployments](doc/source/images/ChooseAnalyticsDeployments.png)
+
+* Click on `New deployment space +`:
+
+![Add New deployment space](doc/source/images/addNewDeploymentSpace.png)
+
+* Click on the top tile for 'Create an empty space':
+
+![Create empty deployment space](doc/source/images/createEmptyDeploymentSpace.png)
+
+* Give your deployment space a unique name, an optional description, then click `Create`.
+
+![Create New deployment space](doc/source/images/createNewDeploymentSpace.png)
+
+### 4. Create the notebook
+
+* In your project, either click the `Add to project +` button, and choose `Notebook`, or, if the *Notebooks* section exists, to the right of *Notebooks* click `New notebook +`:
+
+![Add notebook](doc/source/images/wml-1-add-asset.png)
+
+* On the next screen, select the *From file* tab, give your notebook a *name* and an optional *description*, choose the `Python 3.6` environment as the *Runtime* and then either drag the [notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb](notebooks/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb) file from the cloned repository to the window or navigate to it using `Drag and drop files here or upload.`. Click `Create notebook`:
+
+![Add notebook name and upload file](doc/source/images/wml-2-add-name-and-upload-file.png)
+
+* When the Jupyter notebook is loaded and the kernel is ready then we can start executing cells.
+
+![Notebook loaded](doc/source/images/wml-3-notebook-loaded.png)
+
+> **Important**: *Make sure that you stop the kernel of your notebook(s) when you are done, in order to conserve memory resources!*
+
+![Stop kernel](doc/source/images/JupyterStopKernel.png)
+
+### 5. Insert pandas DataFrame
 
 Now that you are in the notebook, add generated code to insert the data as a DataFrame and fix-up the notebook reference to the DataFrame.
 
-- [ ] Place your cursor at the last line of the following cell:
+- Place your cursor at the last line of the following cell:
 
   ```python
   # Use the find data 10/01 icon and under your remote data set
-  # use "Insert to code" and "Insert Pandas DataFrame
+  # use "Insert to code" and "Insert pandas DataFrame
   # here.
-  import os, pandas as pd
+
   # Add asset from file system
   ```
 
-- [ ] Click the *find data* `10/01` icon on the menu bar (last icon).
-- [ ] Using the `Remote` tab under `10/01`, find the data set that you added to the project, click `Insert to code` and `Insert Pandas DataFrame`.
+* Click the *find data* `10/01` icon on the menu bar (last icon). On the *Files* tab, find the data set that you added to the project, click `Insert to code` and `pandas DataFrame`.
 
-  ![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
+![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
 
-- [ ] The inserted code will result in a DataFrame assigned to a variable named `df1` or `df_data_1` (perhaps with a different sequence number). Find the code cell like the following code block and edit the `#` to make it match the variable name.
+* The inserted code will result in a DataFrame assigned to a variable named `df1` or `df_data_1` (perhaps with a different sequence number). Find the code cell like the following code block and edit the `#` to make it match the variable name.
 
   ```python
   # After inserting the pandas DataFrame code above, change the following
@@ -121,7 +158,7 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
   df_churn_pd = df_data_#
   ```
 
-### 5. Initialize Watson Machine Learning client
+### 6. Initialize Watson Machine Learning client
 
 The Watson Machine Learning client is required to save and deploy our customer churn predictive model, and should be available on your IBM Cloud Pak for Data platform. Insert the required credentials in the following cell:
 
@@ -131,30 +168,54 @@ The Watson Machine Learning client is required to save and deploy our customer c
   # get URL, username and password from your IBM Cloud Pak for Data administrator
   wml_credentials = {
     "url": "https://X.X.X.X",
-    "instance_id": "icp",
+    "instance_id": "wml_local",
     "username": "****",
-    "password": "****"
+    "password": "****",
+    "version": "3.0.0"
   }
 
   client = WatsonMachineLearningAPIClient(wml_credentials)
+  print(client.version)
   ```
 
-### 6. Run the notebook
+### 7. Provide the deployment space information
 
-- [ ] Run the entire notebook using the menu `Cell ▷ Run All` or run the cells individually with the play button as shown here.
+IBM Cloud Pak for Data uses the concept of deployment spaces, which is where models can be deployed. You can list all the spaces using the .list() function. 
 
-   ![press_play.png](doc/source/images/press_play.png)
+Provide the name of the deployment space that you created in [Step 3](#3-create-a-space-for-machine-learning-deployments) above in the cell containing the following text.
 
-### 7. Analyze the results
+```python
+#Insert the name of your deployment space here:
+DEPLOYMENT_SPACE_NAME = 'INSERT-YOUR-DEPLOYMENT-SPACE-NAME-HERE'
+```
+
+The next cell, then, looks up the deployment space id based on the name that you have provided and prints it out. If you do not receive a space GUID as an output to the next cell, verify that you have created a deployment space and have provided the correct deployment space name. Do not proceed until this next cell runs successfully and returns the space_id.
+
+![lookup deployment space](doc/source/images/lookup_deployment_space.png)
+
+Once you know the deployment space id, update the next cell with this id to set this deployment space as the default deployment space. Further down the notebook, when you deploy the model, it will be deployed to this default deployment space.
+
+```python
+# Now set the default space to the GUID for your deployment space. If this is successful, you will see a 'SUCCESS' message.
+client.set.default_space('INSERT_SPACE_ID_HERE')
+```
+
+### 8. Run the notebook
+
+* Run the entire notebook using the menu `Cell ▷ Run All` or run the cells individually with the play button as shown here.
+
+![press_play.png](doc/source/images/press_play.png)
+
+### 9. Analyze the results
 
 #### When the notebook was created
 
-* A pod was instantiated – which means loading a complete compute Jupyter notebook environment (7+ GB) with all the artifacts from the private ICP-D registry.
+* A pod was instantiated – which means loading a complete compute Jupyter notebook environment (7+ GB) with all the artifacts from the ICP4D registry.
 * This pod is scheduled on any VM in your cluster – wherever CPU and memory resources are available.
 * IP addresses and connections are all configured automatically.
 * The same working environment can be used by multiple users. If a single pod's resources are not sufficient, another environment is created automatically.
-* When the number of users grow, you can add more machines to the ICP-D cluster and scheduling of resources is handled automatically.
-* ICP-D's scale-out model is pretty effective.
+* When the number of users grow, you can add more machines to the ICP4D cluster and scheduling of resources is handled automatically.
+* ICP4D's scale-out model is pretty effective.
 * You no longer have to wait days or even weeks to get the compute resources.
 * More users can be accommodated with same compute capacity. As one task completes, its resources are freed up to work on next one.
 
@@ -168,278 +229,312 @@ The Watson Machine Learning client is required to save and deploy our customer c
  -->
 * Example Brunel chart:
 
-  ![churn_risk_chart.png](doc/source/images/churn_risk_chart.png)
+![churn_risk_chart.png](doc/source/images/churn_risk_chart.png)
 
 * The model was saved and deployed to the Watson Machine Learning service. Next, we will test the model in the UI. Later, we'll deploy the model for external use.
 
-  ![save_model.png](doc/source/images/save_model.png)
+![save_model.png](doc/source/images/save_model.png)
 
 #### Sample notebook output
 
 See the notebook with example output [here](https://nbviewer.jupyter.org/github/IBM/icp4d-customer-churn-classifier/blob/master/examples/TradingCustomerChurnClassifierSparkML.jupyter-py36.ipynb).
 
-### 8. Test the model in the UI
+### 10. Test the model
 
-IBM Cloud Pak for Data provides various options for analytics models such as testing, scoring, evaluating, and publishing.
+IBM Cloud Pak for Data provides various options for analytics models such as testing, scoring, evaluating, and publishing. 
 
-#### Interactive testing
+We can start testing using the built-in tooling.
 
-You can use real-time scoring to test your model with different input values in a easy-to-use user interface.
+* Navigate to the left-hand (☰) hamburger menu and choose `Analyze` -> `Analytics deployments`:
 
-- [ ] In your project, using the `Assets` tab, click `Models`.
-- [ ] Click on the action menu (vertical 3 dots) and select `Real-time score`.
-  ![model_actions.png](doc/source/images/model_actions.png)
-- [ ] Change some test values and click `Submit`. Use the upper-right icons to select a pie chart or bar chart.
-  ![wml_test.png](doc/source/images/wml_test.png)
+![Analytics Analyze deployments](doc/source/images/ChooseAnalyticsDeployments.png)
 
-### 9. Deploy the model
+* Choose the deployment space you setup previously by clicking on the name of the space.
 
-Next, we'll create a project release and tag the model under version control. We'll use model management and deployment to make the released model available as a web service (REST API).
+![Deployment space](doc/source/images/deployment-space.png)
 
-#### Commit the project changes
+* In your space overview, click the model name that you just built in the notebook.
 
-- [ ] Go back to the project homepage. You can see a "**Changes made**" message. Click on `commit and push`.
+> **NOTE**: There may be more than one model listed in the 'Models' section. This can happen if you have run the Jupyter notebook more than once. Although you could select any of the models you see listed in the page, the recommendation is to start with whichever model is available that is using a spark-mllib_2.3 runtime.
 
-   ![changes_made.png](doc/source/images/changes_made.png)
+![select model](doc/source/images/deployment-select-model.png)
 
-- [ ] You will see there is a list of the assets that are created in this project. Provide a `Commit message` to identify and make note of changes being pushed.
+* Click on the deployment that was created using the notebook. 
 
-   ![commit.png](doc/source/images/commit.png)
+![select deployment](doc/source/images/deployment-select-deployment.png)
 
-- [ ] Click the `Commit` button.
+* The Deployment *API reference* tab shows how to use the model using *cURL*, *Java*, *Javascript*, *Python*, and *Scala*. Click on the corresponding tab to get the code snippet in the language that you want to use:
 
-- [ ] You will see a success message, and a prompt to `push` the changes. Click on `push`.
+![Deployment API reference](doc/source/images/api-reference-curl.png)
 
-   ![push_changes.png](doc/source/images/push_changes.png)
+#### Test the saved model with built-in tooling
 
-- [ ] Provide a version tag under `Create version tag for release`. Please note that the tag and commit message are both very important to identify and deploy the changes.
+* To get to the built-in test tool, click on the Test tab. You can now test the model by either providing the input data using a form, or by providing the input data as a JSON.
 
-- [ ] Click the `Push` button.
+> **NOTE**: Testing using JSON is enabled for this model because we have specified the input fields for the model during model creation in the notebook as shown below:
 
-#### Create a project release
+![model input fields](doc/source/images/model-input-fields.png)
 
-Now that we have a committed and tagged version of the project, we can create a project release to deploy our model.
+* To test the model by providing data using the form, click on the `Provide input using form` icon and enter the following input in the form fields:
 
-- [ ] Use the left menu's `Administer` drop-down list and click on `Manage deployments`.
+  * `ID`: *4*
+  * `GENDER`: *F*
+  * `STATUS`: *M*
+  * `CHILDREN`: *2*
+  * `ESTINCOME`: *52004*
+  * `HOMEOWNER`: *N*
+  * `AGE`: *25*
+  * `TOTALDOLLARVALUETRADED`: *5030*
+  * `TOTALUNITSTRADED`: *23*,
+  * `LARGESTSINGLETRANSACTION`: *1257*
+  * `SMALLESTSINGLETRANSACTION`: *125*
+  * `PERCENTCHANGECALCULATION`: *3*
+  * `DAYSSINCELASTLOGIN`: *2*
+  * `DAYSSINCELASTTRADE`: *19*
+  * `NETREALIZEDGAINS_YTD`: *0*
+  * `NETREALIZEDLOSSES_YTD`: *251*
 
-   ![manage_deployments.png](doc/source/images/manage_deployments.png)
+* Click the `Predict` button  and the model will be called with the input data. The results will display in the *Result* window. Scroll down to the bottom (Line #110) to see either a "High", a "Low" or a "Medium" for Churn:
 
-- [ ] Click on `+ Add Project Release` to create the deployment.
+![Testing the deployed model](doc/source/images/TestingDeployedModelUsingForm.png)
 
-- [ ] Give it a name that you can easily track. `Route` will be a part of the url. It should be lowercase. Select your project as the `Source project`, and set `Tag` to the release tag you just created. Click the `Create` button.
+* To test the model by providing an input JSON, click on the `Provide input data as JSON` icon and paste the following data under Body:
 
-   ![release.png](doc/source/images/release.png)
-
-This project release is created.
-
-#### Create an online and batch deployment for the deployed model
-
-- [ ] Under the `Assets` tab for your project release, select the model you just created and then click the upper-right `+ web service` button. This will add an online deployment service for this model.
-
-   ![add_web_service.png](doc/source/images/add_web_service.png)
-
-- [ ] Choose whether you want to reserve resources and how many replicas you want for this job.
-
-- [ ] Click the `Create` button.
-
-   ![create_web_service.png](doc/source/images/create_web_service.png)
-
-   > Note: At this time, the online deployment is created. On the deployment panel, you can see the REST API URL `ENDPOINT` and the `DEPLOYMENT TOKEN`.
-
-   ![deployment_token.png](doc/source/images/deployment_token.png)
-
-The deployment is still not active. We need to launch and enable it before it can be used.
-
-#### Launch deployment
-
-- [ ] Under the `Deployments` tab for your project release, your new deployment will be set to `Disabled`. To enable it, you must first bring all of your deployments on-line by clicking the `Launch` button located at the top of the panel.
-
-   ![launch_button.png](doc/source/images/launch_button.png)
-
-- [ ] Then use the action menu (vertical 3 dots) for your deployment and select `Enable`.
-
-   ![enable_service.png](doc/source/images/enable_service.png)
-
-   > Note: For any additional changes made to your project release, use the update button to save your changes.
-
-   ![update.png](doc/source/images/update.png)
-
-#### Deployment testing in the UI
-
-Test the model in the API interface.
-
-- [ ] Click the enabled deployment. Under the `API` tab, we can test the model.
-
-- [ ] Use the default values or use your own values to test the model.
-
-   ![deployment_test.png](doc/source/images/deployment_test.png)
-
-- [ ] Click `Submit`. The result is shown on right with inputs and prediction results.
-
-- [ ] You can click the `< > Generate Code` button to get the code for [deployment testing using curl](#deployment-testing-with-curl).
-
-- [ ] In the top section of the panel, you can copy the POST API endpoint and deployment token. Save it for [using the model in an app](#10-use-the-model-in-an-app).
-
-#### Deployment testing with curl
-
-Using curl on the command line is a good way to test the REST APIs before integrating them with more complicated code. To access the model, use the generated code obtained during [deployment testing in the UI](#deployment-testing-in-the-ui).
-
-For example, in a terminal run a `curl` command like the following:
-
-```bash
-curl -k -X POST \
-  https://169.48.4.137:31843/dmodel/v1/tradingcustomerchurn/pyscript/onlineservice/score \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGFja2FnZU5hbWUiOiJUcmFkaW5nQ3VzdG9tZXJDaHVybkFuYWx5c2lzIiwicGFja2FnZVJvdXRlIjoidHJhZGluZ2N1c3RvbWVyY2h1cm4iLCJpYXQiOjE1NjgyMTM2ODd9.Xnpf3Jf0G3FMAzXCrfm80Au2ucyCcHvuvmz-R5QbrZeRBcfFc9lGyGrDupadSVudAfSGSHG51xAcDKCGB8w1HmqY-Fr5Xt-fxkfOKp0SgZQJFJV2aLiCqIfkSh-XDpD_Br_HMQ6LDjrUwtXky3O_b1684fF_Tb70AswoqQp5tLS_VJU0er8idYv6pwhpuUmtyRSxN0gKV_mQV0tQ0OZ8bCC-uk6W2pkd7MCBuJq6D0ab1m-8oRwvr2oCy7bXXAXZWpZP2v4b-rsyzpbom7pgPmRR91uWdm1jkE24fVp9NJ8x-g1B8rjGxJCO9o8DDptSwD5lyDW5Qekvc2d6aGClKw' \
-  -H 'Cache-Control: no-cache' \
-  -H 'Content-Type: application/json' \
-  -d '{"args":{"input_json":[{"ID":4,"GENDER":"F","STATUS":"M","CHILDREN":2,"ESTINCOME":52004,"HOMEOWNER":"N","AGE":25,"TOTALDOLLARVALUETRADED":5030,"TOTALUNITSTRADED":23,"LARGESTSINGLETRANSACTION":1257,"SMALLESTSINGLETRANSACTION":125,"PERCENTCHANGECALCULATION":3,"DAYSSINCELASTLOGIN":2,"DAYSSINCELASTTRADE":19,"NETREALIZEDGAINS_YTD":0,"NETREALIZEDLOSSES_YTD":251}]}}'
+```json
+{
+   "input_data":[
+      {
+         "fields":[
+            "ID", 
+            "GENDER", 
+            "STATUS",
+            "CHILDREN",
+            "ESTINCOME",
+            "HOMEOWNER",
+            "AGE",
+            "TOTALDOLLARVALUETRADED",
+            "TOTALUNITSTRADED",
+            "LARGESTSINGLETRANSACTION",
+            "SMALLESTSINGLETRANSACTION",
+            "PERCENTCHANGECALCULATION",
+            "DAYSSINCELASTLOGIN",
+            "DAYSSINCELASTTRADE",
+            "NETREALIZEDGAINS_YTD",
+            "NETREALIZEDLOSSES_YTD"
+         ],
+         "values":[
+            [
+               4,
+               "F",
+               "M",
+               2,
+               52004,
+               "N",
+               60,
+               5030,
+               23,
+               1257,
+               125,
+               3,
+               1,
+               1,
+               1000,
+               0
+            ]
+         ]
+      }
+   ]
+}
 ```
 
-#### Deployment dashboard
+* Click the `Predict` button  and the model will be called with the input data. The results will display in the *Result* window. Scroll down to the bottom (Line #110) to see either a "High", a "Low" or a "Medium" for Churn:
 
-The Dashboard shows all of the deployment results. This includes the performance of each evaluation. The thresholds you defined for evaluation will indicate how the deployed model is performing in real-time. “Green” indicates good performance, “amber” indicates mediocre and “red” indicates a poorly performing model. For underperforming models, you can go back to the notebook, make changes until the model performs well, and then reploy the updated model. That’s how the dashboard helps with the machine learning model life cycle management.
+![Testing the deployed model](doc/source/images/TestingDeployedModelUsingJSON.png)
 
-   ![dashboard.png](doc/source/images/dashboard.png)
+#### Test the saved model using cURL
 
-### 10. Use the model in an app
+Now that the model is deployed, we can also test it from external applications. One way to invoke the model API is using the cURL command.
 
-You can also access the web service directly through the REST API. This allows you to use your model for inference in any of your apps.
+> NOTE: Windows users will need the *cURL* command. It's recommended to [download gitbash](https://gitforwindows.org/) for this, as you will also have other tools and you will be able to easily use the shell environment variables in the following steps. Also note that if you are not using gitbash, you may need to change *export* commands to *set* commands.
 
-#### Running the example Python web app
+* In a terminal window (or command prompt in Windows), run the following command to get a token to access the API. Use your Cloud Pak for Data cluster `username` and `password`:
 
-##### Install dependencies
+```bash
+curl -k -X GET https://<cluster-url>/v1/preauth/validateAuth -u <username>:<password>
+```
 
-The general recommendation for Python development is to use a virtual environment ([venv](https://docs.python.org/3/tutorial/venv.html)). To install and initialize a virtual environment, use the `venv` module on Python 3 (you install the virtualenv library for Python 2.7):
+* A json string will be returned with a value for "accessToken" that will look *similar* to this:
 
-- [ ] In a terminal go to the cloned repo directory.
+```json
+{"username":"snyk","role":"Admin","permissions":["access_catalog","administrator","manage_catalog","can_provision"],"sub":"snyk","iss":"KNOXSSO","aud":"DSX","uid":"1000331002","authenticator":"default","accessToken":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNueWstYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJwZXJtaXNzaW9ucyI6WyJhZG1pbmlzdHJhdG9yIiwiY2FuX3Byb3Zpc2lvbiIsIm1hbmFnZV9jYXRhbG9nIiwibWFuYWdlX3F1YWxpdHkiLCJtYW5hZ2VfaW5mb3JtYXRpb25fYXNzZXRzIiwibWFuYWdlX2Rpc2NvdmVyeSIsIm1hbmFnZV9tZXRhZGF0YV9pbXBvcnQiLCJtYW5hZ2VfZ292ZXJuYW5jZV93b3JrZmxvdyIsIm1hbmFnZV9jYXRlZ29yaWVzIiwiYXV0aG9yX2dvdmVycmFuY2VfYXJ0aWZhY3RzIiwiYWNjZXNzX2NhdGFsb2ciLCJhY2Nlc3NfaW5mb3JtYXRpb25fYXNzZXRzIiwidmlld19xdWFsaXR5Iiwic2lnbl9pbl9vbmx5Il0sInN1YiI6InNueWstYWRtaW4iLCJpc3MiOiJLTk9YU1NPIiwiYXVkIjoiRFNYIiwidWlkIjoiMTAwMDMzMTAwMiIsImF1dGhlbnRpY2F0b3IiOiJkZWZhdWx0IiwiaWp0IjoxNTkyOTI3MjcxLCJleHAiOjE1OTI5NzA0MzV9.MExzML-45SAWhrAK6FQG5gKAYAseqdCpublw3-OpB5OsdKJ7whrqXonRpHE7N7afiwU0XNrylbWZYc8CXDP5oiTLF79zVX3LAWlgsf7_E2gwTQYGedTpmPOJgtk6YBSYIB7kHHMYSflfNSRzpF05JdRIacz7LNofsXAd94Xv9n1T-Rxio2TVQ4d91viN9kTZPTKGOluLYsRyMEtdN28yjn_cvjH_vg86IYUwVeQOSdI97GHLwmrGypT4WuiytXRoQiiNc-asFp4h1JwEYkU97ailr1unH8NAKZtwZ7-yy1BPDOLeaR5Sq6mYNIICyXHsnB_sAxRIL3lbBN87De4zAg","_messageCode_":"success","message":"success"}
+```
 
-   ```bash
-   cd icp4d-customer-churn-classifier
-   ```
+* Use the export command to save the "accessToken" part of this response in the terminal window to a variable called `WML_AUTH_TOKEN`. 
 
-- [ ] Initialize a virtual environment.
+```bash
+export WML_AUTH_TOKEN=<value-of-access-token>
+```
 
-   ```bash
-   # Create the virtual environment using Python. Use one of the two commands depending on your Python version.
-   # Note, it may be named python3 on your system.
+* Back on the model deployment page, gather the `URL` to invoke the model from the *API reference* by copying the `Endpoint`, and export it to a variable called `URL`:
 
-   python -m venv venv       # Python 3.X
-   virtualenv venv           # Python 2.X
+![Model Deployment Endpoint](doc/source/images/api-reference-curl.png)
 
-   # Source the virtual environment. Use one of the two commands depending on your OS.
+```bash
+export URL=https://blahblahblah.com
+```
 
-   source venv/bin/activate  # Mac or Linux
-   ./venv/Scripts/activate   # Windows PowerShell
-   ```
+Now run this curl command from a terminal window to invoke the model with the same payload that was used previously:
 
-   > **TIP** :bulb: To terminate the virtual environment use the `deactivate` command.
+```bash
+curl -k -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header "Authorization: Bearer  $WML_AUTH_TOKEN" -d '{"input_data":[{"fields":["ID", "GENDER", "STATUS", "CHILDREN",  "ESTINCOME", "HOMEOWNER", "AGE", "TOTALDOLLARVALUETRADED", "TOTALUNITSTRADED", "LARGESTSINGLETRANSACTION", "SMALLESTSINGLETRANSACTION", "PERCENTCHANGECALCULATION", "DAYSSINCELASTLOGIN", "DAYSSINCELASTTRADE", "NETREALIZEDGAINS_YTD", "NETREALIZEDLOSSES_YTD"],"values":[[4, "F", "M", 2, 52004, "N", 60, 5030, 23, 1257, 125, 3, 1, 1, 1000, 0]]}]}' $URL
+```
 
-- [ ] Install the Python requirements.
+A json string similar to the one below will be returned with the response, including a "High", a "Low" or a "Medium" at the end indicating the risk of churn for this customer.
 
-   ```bash
-   cd stocktraderapp
-   pip install -r requirements.txt
-   ```
+```json
+{"predictions":[{"fields":["ID","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","AGE","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD","GENDERIndex","GENDERclassVec","STATUSIndex","STATUSclassVec","HOMEOWNERIndex","HOMEOWNERclassVec","features","rawPrediction","probability","prediction","predictedLabel"],"values":[[4,"F","M",2,52004,"N",60,5030,23,1257,125,3,1,1,1000,0,0.0,[1,[0],[1.0]],0.0,[2,[0],[1.0]],0.0,[1,[0],[1.0]],[1.0,1.0,0.0,1.0,4.0,2.0,52004.0,60.0,5030.0,23.0,1257.0,125.0,3.0,1.0,1.0,1000.0,0.0],[2.9466019417475726,8.67282872405483,8.380569334197599],[0.14733009708737863,0.4336414362027415,0.4190284667098799],1.0,"Low"]]}]}
+```
 
-- [ ] Copy the env.sample to .env.
+### 11. Use the model in an app
 
-   ```bash
-   cp env.sample .env
-   ```
+You can also access the online model deployment directly through the REST API. This allows you to use your model for inference in any of your apps. For this code pattern, we'll be using a Python Flask application to collect information, score it against the model, and show the results.
 
-- [ ] Edit the .env file to provide the `URL` and `TOKEN`.
+#### Install dependencies
 
-  * `URL` is your web service URL for scoring.
-  * `TOKEN` is your deployment access token.
-  ```bash
-  # Copy this file to .env.
-  # Edit the .env file with the required settings before starting the app.
+> **NOTE**: This application only runs on Python 3.6 and above, so the instructions here are for Python 3.6+ only.
 
-  # Required: Provide your web service URL for scoring.
-  # E.g., URL=https://9.10.222.3:31843/dmodel/v1/project/pyscript/tag/score
+The general recommendation for Python development is to use a virtual environment ([`venv`](https://docs.python.org/3/tutorial/venv.html)). To install and initialize a virtual environment, use the `venv` module:
 
-  URL=
+In a terminal, go to the `stocktraderapp` folder within the cloned repo directory.
 
-  # Required: Provide your web service deployment access token.
-  #           This TOKEN should start with "Bearer ".
-  # E.g., TOKEN=Bearer abCdwFghIjKLMnO1PqRsTuV2wWX3YzaBCDE4.fgH1r2... (and so on, tokens are long).
+```bash
+git clone https://github.com/IBM/icp4d-customer-churn-classifier
+cd icp4d-customer-churn-classifier/stocktraderapp
+```
 
-  TOKEN=
+Initialize a virtual environment with [`venv`](https://docs.python.org/3/tutorial/venv.html).
 
-  # Optional: You can override the server's host and port here.
+```bash
+# Create the virtual environment using Python. 
+# Note, it may be named python3 on your system.
+python -m venv venv       # Python 3.X
 
-  HOST=0.0.0.0
-  PORT=5000
-  ```
+# Source the virtual environment. Use one of the two commands depending on your OS.
+source venv/bin/activate  # Mac or Linux
+./venv/Scripts/activate   # Windows PowerShell
+```
+> **TIP** To terminate the virtual environment use the `deactivate` command.
 
-- [ ] Start the flask server.
+Finally, install the Python requirements.
 
-   ```bash
-   python StockTraderChurn.py
-   ```
+```bash
+pip install -r requirements.txt
+```
 
-- [ ] Use your browser to go to http://0.0.0.0:5000 and try it out.
+#### Update environment variables
 
-- [ ] Use `CTRL-C` to stop the flask server when you are done.
+It is best practice to store configurable information as environment variables, instead of hard-coding any important information. To reference our model and supply an API key, we will pass these values in via a file that is read; the key-value pairs in this file are stored as environment variables.
+
+Copy the `env.sample` file to `.env`.
+
+```bash
+cp env.sample .env
+```
+
+Edit the .env file to provide the `URL` and `TOKEN`.
+
+* `URL` is your web service URL for scoring.
+* `TOKEN` is your deployment access token.
+
+```bash
+# Copy this file to .env.
+# Edit the .env file with the required settings before starting the app.
+
+# Required: Provide your web service URL for scoring.
+# E.g., URL=https://9.10.222.3:31843/dmodel/v1/project/pyscript/tag/score
+
+URL=
+
+# Required: Provide your web service deployment access token.
+# E.g., TOKEN=abCdwFghIjKLMnO1PqRsTuV2wWX3YzaBCDE4.fgH1r2... (and so on, tokens are long).
+
+TOKEN=
+
+# Optional: You can override the server's host and port here.
+
+HOST=0.0.0.0
+PORT=5000
+```
+
+#### Start the application
+
+Start the flask server by running the following command:
+
+```bash
+python StockTraderChurn.py
+```
+
+Use your browser to go to [http://0.0.0.0:5000](http://0.0.0.0:5000) and try it out.
+
+> **TIP**: Use `ctrl`+`c` to stop the Flask server when you are done.
 
 #### Sample Output
 
-The prediction screen:
+Enter some sample values into the form:
 
-   ![sample_output.png](doc/source/images/sample_output.png)
+![sample_output_reset.png](doc/source/images/sample_output_reset.png)
 
-Pressing `Reset` allows you to enter new values:
+Click the `Submit` button and the churn prediction is returned:
 
-   ![sample_output_reset.png](doc/source/images/sample_output_reset.png)
+![sample_output.png](doc/source/images/sample_output.png)
 
-### 11. (OPTIONAL) Use Db2 Warehouse to store customer data
+Pressing `Reset` allows you to go back and enter new values.   
 
-This section provides an alternative to accessing a local csv file in your notebook. This requires that you have created a Db2 Warehouse database deployment in your IBM Cloud Pak for Data cluster. With it, you can access the integrated database console to complete common tasks, such as loading data into the database.
+### 12. (OPTIONAL) Use Db2 Warehouse to store customer data
 
-#### Open the database
+This section provides an alternative to accessing a local csv file in your notebook. This requires that you have created a Db2 Warehouse database deployment in your IBM Cloud Pak for Data cluster or on IBM Cloud. With it, you can access the integrated database console to complete common tasks, such as loading data into the database.
 
-- [ ] Use the left menu's `Collect` drop-down list and click on `My data`.
-- [ ] Click on the `Databases` tab.
-- [ ] You should see a Db2 Warehouse tile with a status of `Available` (otherwise revisit the prerequisites and ensure your userid has access to a database).
-- [ ] Click on the tile action menu (vertical 3 dots) and select `Open`.
+You can follow the instructions provided in Steps 4, 5 and 6 of the [Virtualizing DB2 Warehouse data with data virtualization](https://developer.ibm.com/tutorials/virtualizing-db2-warehouse-data-with-data-virtualization/) tutorial to seed the DB2 warehouse (using the [mergedcustomers.csv](data/mergedcustomers.csv) file provided in this repo), obtain the connection details for your DB2 warehouse and use the connection details to add a connection to your IBM Cloud Pak for Data cluster.
 
-#### Load the data
+**IMPORTANT**: For this code pattern, remember to seed the DB2 warehouse with the `data/mergedcustomers.csv` file from your cloned repo and not the file mentioned in the *Virtualizing DB2 Warehouse data with data virtualization* tutorial.
 
-- [ ] Click on the upper-right `☰ Menu` and select `Load`.
-- [ ] Use drag-and-drop or click `browse files` and open the `data/mergedcustomers.csv` file from your cloned repo.
-- [ ] Click `Next`.
-- [ ] Select or create the schema to use for the data.
-- [ ] Select or create the table to use for the data.
-- [ ] Click `Next`.
-- [ ] Ensure that the data is being properly interpreted. For example, specify that the first row in the CSV file is a header and ensure that the comma separator is used.
-- [ ] Click `Next`.
-- [ ] Review the summary and click `Begin Load`.
+#### Add the data asset to your project
 
-#### Collect the database URL and credentials
+* Go the (☰) menu and click *Projects*:
 
-- [ ] Go back to `Collect ▷ My data ▷ Databases ▷ Db2 Warehouse` tile.
-- [ ] Click on the tile action menu (vertical 3 dots) and select `Details`.
-- [ ] Copy the `Username`, `Password`, and `JDBC Connection URL` to use later.
+![(☰) Menu -> Projects](doc/source/images/cpd-projects-menu.png)
 
-#### Add the data asset
+* Click on your project. On your project main page, click on `Add to project +` and select `Connection`:
 
-- [ ] If needed, create a project using the instructions in [set up an analytics project](#2-set-up-an-analytics-project).
-- [ ] Use the left menu to go back to `Projects`.
-- [ ] Select the project you created.
-- [ ] In your project, use the `Data Sources` tab, and click `+ Add Data Source`.
-- [ ] Provide a `Data source name` and `Description`.
-- [ ] Use the `Data source type` drop-down list to select `Db2 Warehouse on Cloud`.
-- [ ] Fill in the `JDBC URL`, `Username`, and `Password` that you collected earlier.
-- [ ] Click the `Test Connection` button and make sure your test connection passed.
-- [ ] Click on `+ Add remote data set`.
-- [ ] Provide a `Remote data set name` and a `Description`.
-- [ ] Provide a `Schema`. This is the schema that you used when you created the table.
-- [ ] Provide the table name (that you used when you loaded the CSV data).
-- [ ] Click `Create`.
+![add connection to project](doc/source/images/add-connection.png)
+
+* On the `From global` tab, select the DB2 Warehouse connection that was added earlier:
+
+![add DB2 warehouse](doc/source/images/add-db2-warehouse.png)
+
+* Click `Test` to test the connection and once you get a message that says `Connection test passed`, click `Create`:
+
+![add connection to project](doc/source/images/add-connection-to-project.png)
+
+* You should see the connection listed under *Data Assets* in your project's landing page. Click on `Add to project +` and choose `Connected data`:
+
+![add connected data](doc/source/images/add-connected-data.png)
+
+* Click on `Select source`:
+
+![add connected data - select source](doc/source/images/add-connected-data-select-source.png)
+
+* Select your *DB2 warehouse connection*, select the *schema*, and then select the *table* you had created when loading the file to the DB2 warehouse. Finally click `Select`:
+
+![add connected data - select table](doc/source/images/add-connected-data-select-table.png)
+
+* Provide a *name* and an optional *description* for this data asset and click `Create`:
+
+![add connected data - create](doc/source/images/add-connected-data-create.png)
 
 #### Complete the code pattern
 
-Follow the instructions above for creating your project and notebook. Once the notebook completes and your model is created, you can deploy and access your model just as before, starting with the step [test the model in the UI](#8-test-the-model-in-the-ui).
+Follow the remaining instructions above starting from [3. Create a Space for Machine Learning Deployments](#3-create-a-space-for-machine-learning-deployments). When adding the pandas dataFrame in your notebook, choose the asset name that you had provided when adding the connected data to your project.
 
 ## License
 

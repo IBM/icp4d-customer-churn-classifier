@@ -24,6 +24,7 @@ app.config.update(dict(
     SECRET_KEY=os.environ.get('SECRET_KEY', 'development key')
 ))
 
+labels = ["High", "Low", "Medium"]
 
 class mortgagedefault():
 
@@ -32,23 +33,21 @@ class mortgagedefault():
 
         if request.method == 'POST':
             ID = 999
-            Age = request.form['Age']
+            Age = int(request.form['Age'])
             Gender = request.form['Gender']
             Status = request.form['Status']
-            Children = request.form['Children']
+            Children = int(request.form['Children'])
             HomeOwner = request.form['Homeowner']
-            EstIncome = request.form['Income']
-            NetRealizedGainsYTD = request.form['Netrealizedgainsytd']
-            NetRealizedLossesYTD = request.form['Netrealizedlossesytd']
-            SmallestSingleTransaction = request.form[
-              'Smallestsingletransaction']
-            LargestSingleTransaction = request.form['Largestsingletransaction']
-            TotalDollarValueTraded = request.form['Totaldollarvaluetraded']
-            TotalUnitsTraded = request.form['Totalunitstraded']
-            DaysSinceLastLogin = request.form['Dayssincelastlogin']
-            DaysSinceLastTrade = request.form['Dayssincelasttrade']
-            PercentageChangeCalculation = request.form[
-              'Percentagechangecalculation']
+            EstIncome = int(request.form['Income'])
+            NetRealizedGainsYTD = int(request.form['Netrealizedgainsytd'])
+            NetRealizedLossesYTD = int(request.form['Netrealizedlossesytd'])
+            SmallestSingleTransaction = int(request.form['Smallestsingletransaction'])
+            LargestSingleTransaction = int(request.form['Largestsingletransaction'])
+            TotalDollarValueTraded = int(request.form['Totaldollarvaluetraded'])
+            TotalUnitsTraded = int(request.form['Totalunitstraded'])
+            DaysSinceLastLogin = int(request.form['Dayssincelastlogin'])
+            DaysSinceLastTrade = int(request.form['Dayssincelasttrade'])
+            PercentageChangeCalculation = int(request.form['Percentagechangecalculation'])
 
             session['ID'] = ID
             session['Age'] = Age
@@ -69,7 +68,7 @@ class mortgagedefault():
               'PercentageChangeCalculation'] = PercentageChangeCalculation
 
             scoring_href = os.environ.get('URL')
-            mltoken = os.environ.get('TOKEN')
+            mltoken = 'Bearer ' + os.environ.get('TOKEN')
 
             if not (scoring_href and mltoken):
                 raise EnvironmentError('Env vars URL and TOKEN are required.')
@@ -92,7 +91,12 @@ class mortgagedefault():
                 "NETREALIZEDGAINS_YTD": NetRealizedGainsYTD,
                 "NETREALIZEDLOSSES_YTD": NetRealizedLossesYTD}
 
-            payload_scoring = {"args": {"input_json": [data]}}
+            input_data = list(data.keys())
+            input_values = list(data.values())
+
+            payload_scoring = {"input_data": [
+                {"fields": input_data, "values": [input_values]}
+            ]}
             print("Payload is ")
             print(payload_scoring)
             header_online = {
@@ -107,14 +111,26 @@ class mortgagedefault():
             result = response_scoring.text
             print("Result is ", result)
             result_json = json.loads(result)
-            churn_risk = result_json["result"]["predictions"][0].lower()
+            result_keys = result_json['predictions'][0]['fields']
+            result_vals = result_json['predictions'][0]['values']
+
+            result_dict = dict(zip(result_keys, result_vals[0]))
+
+            churn_risk = result_dict["predictedLabel"].lower()
+            high_percent = result_dict["probability"][0] * 100
+            med_percent = result_dict["probability"][1] * 100
+            low_percent = result_dict["probability"][2] * 100
             flash(
               'The risk of this customer churning is %s ' % churn_risk)
             return render_template(
                 'score.html',
-                result=result_json,
+                result=result_dict,
                 churn_risk=churn_risk,
-                response_scoring=response_scoring)
+                high_percent=high_percent,
+                med_percent=med_percent,
+                low_percent=low_percent,
+                response_scoring=response_scoring,
+                labels=labels)
 
         else:
             return render_template('input.html')
