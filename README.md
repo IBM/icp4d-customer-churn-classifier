@@ -138,14 +138,14 @@ Now that you are in the notebook, add generated code to insert the data as a Dat
 - Place your cursor at the last line of the following cell:
 
   ```python
-  # Use the find data 10/01 icon and under your remote data set
+  # Use the find data 01/00 icon and under your remote data set
   # use "Insert to code" and "Insert pandas DataFrame
   # here.
 
   # Add asset from file system
   ```
 
-* Click the *find data* `10/01` icon on the menu bar (last icon). On the *Files* tab, find the data set that you added to the project, click `Insert to code` and `pandas DataFrame`.
+* Click the *find data* `01/00` icon on the menu bar (last icon). On the *Files* tab, find the data set that you added to the project, click `Insert to code` and `pandas DataFrame`.
 
 ![insert_spark_dataframe.png](doc/source/images/insert_spark_dataframe.png)
 
